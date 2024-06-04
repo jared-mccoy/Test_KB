@@ -40,6 +40,14 @@ function coerceToArray(input: string | string[]): string[] | undefined {
     .map((tag: string | number) => tag.toString())
 }
 
+function normalizeKeys(data: { [key: string]: any }) {
+  const normalizedData: { [key: string]: any } = {}
+  for (const key of Object.keys(data)) {
+    normalizedData[key.toLowerCase()] = data[key]
+  }
+  return normalizedData
+}
+
 export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
@@ -57,22 +65,24 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> 
               },
             })
 
-            if (data.title != null && data.title.toString() !== "") {
-              data.title = data.title.toString()
+            const normalizedData = normalizeKeys(data)
+
+            if (normalizedData.title != null && normalizedData.title.toString() !== "") {
+              normalizedData.title = normalizedData.title.toString()
             } else {
-              data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
+              normalizedData.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
             }
 
-            const tags = coerceToArray(coalesceAliases(data, ["tags", "tag"]))
-            if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
+            const tags = coerceToArray(coalesceAliases(normalizedData, ["tags", "tag"]))
+            if (tags) normalizedData.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
-            const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
-            if (aliases) data.aliases = aliases
-            const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
-            if (cssclasses) data.cssclasses = cssclasses
+            const aliases = coerceToArray(coalesceAliases(normalizedData, ["aliases", "alias"]))
+            if (aliases) normalizedData.aliases = aliases
+            const cssclasses = coerceToArray(coalesceAliases(normalizedData, ["cssclasses", "cssclass"]))
+            if (cssclasses) normalizedData.cssclasses = cssclasses
 
             // fill in frontmatter
-            file.data.frontmatter = data as QuartzPluginData["frontmatter"]
+            file.data.frontmatter = normalizedData as QuartzPluginData["frontmatter"]
           }
         },
       ]
