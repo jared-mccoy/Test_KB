@@ -17,4 +17,30 @@
       }
     }
   }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    td {
+      padding: 0.25rem 0;
+      vertical-align: top;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prop-key {
+      font-weight: bold;
+      padding-right: 1rem;
+      max-width: 20%; /* Adjusted to 20% width */
+      width: 20%; /* Explicitly set the width to 20% */
+    }
+
+    .prop-value {
+      max-width: 80%; /* Adjusted to 80% width */
+      width: 80%; /* Explicitly set the width to 80% */
+    }
+  }
 }

@@ -5,39 +5,6 @@ import { i18n } from "../i18n";
 import { classNames } from "../util/lang";
 import { DataMap } from "vfile";
 
-function coerceToArray(input: string | string[]): string[] | undefined {
-  if (input === undefined || input === null) return undefined;
-
-  if (!Array.isArray(input)) {
-    input = input
-      .toString()
-      .split(",")
-      .map((tag: string) => tag.trim());
-  }
-
-  return input.filter((tag: unknown) => typeof tag === "string" || typeof tag === "number").map((tag: string | number) => tag.toString());
-}
-
-function extractLinks(data: { [key: string]: any }) {
-  const links: { [key: string]: string[] } = {};
-
-  for (const key in data) {
-    if (data.hasOwnProperty(key)) {
-      const values = coerceToArray(data[key]);
-      if (values) {
-        links[key] = [];
-        values.forEach(value => {
-          const match = value.match(/\[\[([^[\]]+)\|([^[\]]+)\]\]/);
-          if (match) {
-            links[key].push(match[1]);
-          }
-        });
-      }
-    }
-  }
-  return links;
-}
-
 const Backlinks: QuartzComponent = ({
   fileData,
   allFiles,
@@ -46,97 +13,107 @@ const Backlinks: QuartzComponent = ({
 }: QuartzComponentProps) => {
   const slug = simplifySlug(fileData.slug!);
 
-  // Extract and push frontmatter links to root links, ensuring uniqueness
+  // Push frontmatter links to root links and ensure uniqueness
   allFiles.forEach((file) => {
     const data = file as DataMap | undefined;
-    if (data?.frontmatter) {
-      const frontmatterLinks = extractLinks(data.frontmatter);
-      for (const key in frontmatterLinks) {
-        const links = frontmatterLinks[key].map(link => simplifySlug(link as FullSlug));
-        const uniqueLinks = new Set([...(file.links || []), ...links]);
-        file.links = Array.from(uniqueLinks);
-      }
+    if (data?.frontmatter?.links) {
+      const frontmatterLinks: SimpleSlug[] = data.frontmatter.links.map(link => simplifySlug(link as FullSlug));
+      const uniqueLinks = new Set([...(file.links || []), ...frontmatterLinks]);
+      file.links = Array.from(uniqueLinks);
     }
   });
 
   const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug));
 
-  // Function to render a property row
   const renderProperty = (key: string, value: any) => {
+    const wikilinkRegex = /\[\[([^[\]]+?)\]\]/;
+    const urlRegex = /https?:\/\/[^\s]+/;
+  
     if (Array.isArray(value)) {
       return (
         <tr key={key}>
-          <td>{key}</td>
-          <td>
-            <ul>
-              {value.map((item, index) => {
-                const match = item.match(/\[\[([^[\]]+)\|([^[\]]+)\]\]/);
-                if (match) {
-                  const link = match[1];
-                  const title = match[2];
-                  return (
-                    <li key={index}>
-                      <a href={resolveRelative(fileData.slug!, simplifySlug(link as FullSlug))} class="internal">
-                        {title}
-                      </a>
-                    </li>
-                  );
-                }
-                return <li key={index}>{item}</li>;
-              })}
-            </ul>
+          <td class="prop-key">{key}:</td>
+          <td class="prop-value">
+            {value.map((item, index) => {
+              const wikilinkMatch = item.match(wikilinkRegex);
+
+              console.log('WIKI',wikilinkMatch);
+              const urlMatch = item.match(urlRegex);
+  
+              if (wikilinkMatch) {
+                const parts = wikilinkMatch[1].split("|");
+                const link = parts[0];
+                const title = parts[1] || link;
+                return (
+                  <div key={index}>
+                    <a href={resolveRelative(fileData.slug!, simplifySlug(link as FullSlug))} class="internal">
+                      {title}
+                    </a>
+                  </div>
+                );
+              } else if (urlMatch) {
+                return (
+                  <div key={index}>
+                    <a href={item} class="external" target="_blank" rel="noopener noreferrer">
+                      {item}
+                    </a>
+                  </div>
+                );
+              }
+  
+              return <div key={index}>{item}</div>;
+            })}
           </td>
         </tr>
       );
     } else {
-      const match = value.match(/\[\[([^[\]]+)\|([^[\]]+)\]\]/);
-      if (match) {
-        const link = match[1];
-        const title = match[2];
+      const wikilinkMatch = value.match(wikilinkRegex);
+      const urlMatch = value.match(urlRegex);
+  
+      if (wikilinkMatch) {
+        const parts = wikilinkMatch[1].split("|");
+        const link = parts[0];
+        const title = parts[1] || link;
         return (
           <tr key={key}>
-            <td>{key}</td>
-            <td>
+            <td class="prop-key">{key}:</td>
+            <td class="prop-value">
               <a href={resolveRelative(fileData.slug!, simplifySlug(link as FullSlug))} class="internal">
                 {title}
               </a>
             </td>
           </tr>
         );
+      } else if (urlMatch) {
+        return (
+          <tr key={key}>
+            <td class="prop-key">{key}:</td>
+            <td class="prop-value">
+              <a href={value} class="external" target="_blank" rel="noopener noreferrer">
+                {value}
+              </a>
+            </td>
+          </tr>
+        );
       }
+  
       return (
         <tr key={key}>
-          <td>{key}</td>
-          <td>{value}</td>
+          <td class="prop-key">{key}:</td>
+          <td class="prop-value">{value}</td>
         </tr>
       );
     }
   };
+  
+  
 
   return (
     <div class={classNames(displayClass, "backlinks")}>
       <h3>{i18n(cfg.locale).components.backlinks.title}</h3>
-      <table class="frontmatter-table">
+      <table>
         <tbody>
           {Object.entries(fileData.frontmatter || {}).map(([key, value]) => renderProperty(key, value))}
-          <tr>
-            <td>Backlinks</td>
-            <td>
-              {backlinkFiles.length > 0 ? (
-                <ul>
-                  {backlinkFiles.map((f) => (
-                    <li key={f.slug}>
-                      <a href={resolveRelative(fileData.slug!, f.slug!)} class="internal">
-                        {f.frontmatter?.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                i18n(cfg.locale).components.backlinks.noBacklinksFound
-              )}
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
