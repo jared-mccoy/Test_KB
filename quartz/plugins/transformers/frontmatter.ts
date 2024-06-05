@@ -47,6 +47,31 @@ function normalizeKeys(data: { [key: string]: any }) {
   }
   return normalizedData
 }
+function extractLinks(data: { [key: string]: any }) {
+  //console.log(`Extracting links from frontmatter: ${JSON.stringify(data)}`);
+  const links: string[] = [];
+
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const values = coerceToArray(data[key]);
+      if (values) {
+        values.forEach(value => {
+          //console.log(`Processing value: ${value}`);
+          const match = value.match(/\[\[([^[\]]+)\|([^[\]]+)\]\]/);
+          if (match) {
+            links.push(match[1]);
+          } else {
+            //console.log(`No match found for value: ${value}`);
+          }
+        });
+      } else {
+        //console.log(`No values found for key: ${key}`);
+      }
+    }
+  }
+  //console.log(`Extracted links: ${links}`);
+  return links;
+}
 
 export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -81,8 +106,16 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> 
             const cssclasses = coerceToArray(coalesceAliases(normalizedData, ["cssclasses", "cssclass"]))
             if (cssclasses) normalizedData.cssclasses = cssclasses
 
-            // fill in frontmatter
+            // Extract links from specific keys in frontmatter
+            const links = extractLinks(normalizedData);
+            if (links.length > 0) normalizedData.links = links;
+
+            // Log only whether links are present or not
+            //console.log(`Processed frontmatter for file ${file.path}: Links present: ${links.length > 0}`)
+
+            // Inside the FrontMatter plugin function
             file.data.frontmatter = normalizedData as QuartzPluginData["frontmatter"]
+            //console.log(`File ${file.path} data after FrontMatter processing: ${JSON.stringify(file.data)}`)
           }
         },
       ]
@@ -103,6 +136,10 @@ declare module "vfile" {
         lang: string
         enableToc: string
         cssclasses: string[]
+        links: string[] // Add links here
       }>
   }
 }
+
+
+

@@ -120,7 +120,7 @@ export const tableRegex = new RegExp(
 // matches any wikilink, only used for escaping wikilinks inside tables
 export const tableWikilinkRegex = new RegExp(/(!?\[\[[^\]]*?\]\])/, "g")
 
-const highlightRegex = new RegExp(/==([^=]+)==/, "g")
+const highlightRegex = new RegExp(/==([\s\S]*?)==/, "g");
 const commentRegex = new RegExp(/%%[\s\S]*?%%/, "g")
 // from https://github.com/escwxyz/remark-obsidian-callout/blob/main/src/index.ts
 const calloutRegex = new RegExp(/^\[\!(\w+)\|?(.+?)?\]([+-]?)/)
@@ -154,6 +154,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
   return {
     name: "ObsidianFlavoredMarkdown",
     textTransform(_ctx, src) {
+
       // do comments at text level
       if (opts.comments) {
         if (src instanceof Buffer) {
@@ -174,6 +175,16 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
           return value + "\n> "
         })
       }
+
+      if (opts.highlight) {
+        if (src instanceof Buffer) {
+          src = src.toString();
+        }
+        src = src.replace(highlightRegex, (_match: any, p1: string) => {
+          return `<span class="text-highlight">${p1}</span>`;
+        });
+      }
+      
 
       // pre-transform wikilinks (fix anchors to things that may contain illegal syntax e.g. codeblocks, latex)
       if (opts.wikilinks) {
@@ -269,8 +280,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                   } else if ([".pdf"].includes(ext)) {
                     return {
                       type: "html",
-                      value: `<iframe src="${url}"></iframe>`,
-                    }
+                      value: `<iframe src="${url}" width="600" height="350" frameborder="0" allowfullscreen></iframe>`,
+                    };
                   } else {
                     const block = anchor
                     return {
@@ -302,17 +313,24 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
           }
 
           if (opts.highlight) {
+            // Log the entire tree before applying replacements
+          
             replacements.push([
               highlightRegex,
               (_value: string, ...capture: string[]) => {
-                const [inner] = capture
+                const [inner] = capture;
+                console.log("HIGHLIGHT", inner);
                 return {
                   type: "html",
                   value: `<span class="text-highlight">${inner}</span>`,
-                }
+                };
               },
-            ])
+            ]);
+          
+            // Log the entire tree after applying replacements
           }
+          
+          
 
           if (opts.parseArrows) {
             replacements.push([
