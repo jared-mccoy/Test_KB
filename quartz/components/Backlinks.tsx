@@ -26,7 +26,7 @@ const Backlinks: QuartzComponent = ({
   const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug));
 
   const renderProperty = (key: string, value: any) => {
-    const wikilinkRegex = /\[\[([^[\]]+?)\]\]/;
+    const wikilinkRegex = /\[\[([^[\]]*(?:\[[^[\]]*\])*[^[\]]*)\]\]/;
     const urlRegex = /https?:\/\/[^\s]+/;
   
     if (Array.isArray(value)) {
