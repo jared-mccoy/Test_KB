@@ -52,7 +52,11 @@ const config: QuartzConfig = {
   },
   plugins: {
     transformers: [
-      Plugin.FrontMatter(),
+      Plugin.FrontMatter({
+        filter:{
+          exclude: ['Config.ShowResource', 'Label', 'ID', ],          
+        }
+      }),
       Plugin.CreatedModifiedDate({
         priority: ["frontmatter", "filesystem"],
       }),

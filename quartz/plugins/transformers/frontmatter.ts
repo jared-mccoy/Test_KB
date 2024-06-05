@@ -8,14 +8,49 @@ import { QuartzPluginData } from "../vfile"
 import { i18n } from "../../i18n"
 
 export interface Options {
-  delimiters: string | [string, string]
-  language: "yaml" | "toml"
+  delimiters: string | [string, string];
+  language: "yaml" | "toml";
+  filter?: {
+    include?: string[];
+    exclude?: string[];
+  };
 }
 
 const defaultOptions: Options = {
   delimiters: "---",
   language: "yaml",
+};
+
+function filterFrontmatter<T extends Record<string, any>>(frontmatter: T, options: Options): T {
+  const { filter } = options;
+  if (!filter) {
+    return frontmatter;
+  }
+
+  const { include, exclude } = filter;
+  let filteredFrontmatter: Record<string, any> = {};
+
+  if (include) {
+    include.forEach((key) => {
+      if (key in frontmatter) {
+        filteredFrontmatter[key] = frontmatter[key];
+      }
+    });
+  } else {
+    filteredFrontmatter = { ...frontmatter };
+  }
+
+  if (exclude) {
+    exclude.forEach((key) => {
+      if (key in filteredFrontmatter) {
+        delete filteredFrontmatter[key];
+      }
+    });
+  }
+
+  return filteredFrontmatter as T;
 }
+
 
 function coalesceAliases(data: { [key: string]: any }, aliases: string[]) {
   for (const alias of aliases) {
@@ -88,9 +123,12 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> 
                 yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
                 toml: (s) => toml.parse(s) as object,
               },
-            })
+            });
 
-            const normalizedData = normalizeKeys(data)
+            // Filter frontmatter before normalization
+            const filteredData = filterFrontmatter(data, opts);
+
+            const normalizedData = normalizeKeys(filteredData);
 
             if (normalizedData.title != null && normalizedData.title.toString() !== "") {
               normalizedData.title = normalizedData.title.toString()
@@ -140,6 +178,5 @@ declare module "vfile" {
       }>
   }
 }
-
 
 
