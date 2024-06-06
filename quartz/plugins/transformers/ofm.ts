@@ -99,15 +99,19 @@ export const externalLinkRegex = /^https?:\/\//i
 
 export const arrowRegex = new RegExp(/(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})/, "g")
 
-// !?                 -> optional embedding
-// \[\[               -> open brace
-// ([^\[\]\|\#]+)     -> one or more non-special characters ([,],|, or #) (name)
-// (#[^\[\]\|\#]+)?   -> # then one or more non-special characters (heading link)
-// (\\?\|[^\[\]\#]+)? -> optional escape \ then | then one or more non-special characters (alias)
+// !?                      -> optional embedding
+// \[\[                    -> open brace
+// ([^[\]\|#]*)            -> one or more non-special characters ([,],|, or #) (name)
+// (#[^[\]\|]*)?           -> # then one or more non-special characters (heading link)
+// (\|[^\[\]]*(\[[^\[\]]*\])?)? -> | then one or more non-special characters, optionally containing nested brackets (alias)
+// \]\]                    -> close brace
+// This regex handles nested brackets within aliases accurately, fixing the issue where previous regexes failed to match nested brackets correctly within the alias.
+
 export const wikilinkRegex = new RegExp(
-  /!?\[\[([^\[\]\|\#\\]+)?(#+[^\[\]\|\#\\]+)?(\\?\|[^\[\]\#]+)?\]\]/,
-  "g",
-)
+  /!?\[\[([^[\]\|#]*)(#[^[\]\|]*)?(\|[^\[\]]*(\[[^\[\]]*\])?)?\]\]/,
+  "g"
+);
+
 
 // ^\|([^\n])+\|\n(\|) -> matches the header row
 // ( ?:?-{3,}:? ?\|)+  -> matches the header row separator

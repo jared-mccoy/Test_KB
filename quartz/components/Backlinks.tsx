@@ -31,8 +31,10 @@ const Backlinks: QuartzComponent = ({
   const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug));
   console.log("Backlink files:", backlinkFiles.map(file => file.slug));
 
+  //WORKING
+
   const renderProperty = (key: string, value: any) => {
-    if (key === "title") {
+    if (key === "title" || key === "links") {
       return null; // Skip rendering the title property
     }
 
