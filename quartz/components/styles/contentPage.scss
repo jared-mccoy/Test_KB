@@ -1,0 +1,16 @@
+/* Ensure vertical stacking for properties and backlinks components */
+.properties-container, .backlinks-container {
+    width: 100%;
+  }
+  
+  .right-column {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @media (max-width: 768px) {
+    .right-column {
+      flex-direction: column;
+    }
+  }
+  
