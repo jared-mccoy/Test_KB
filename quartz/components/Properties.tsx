@@ -1,35 +1,14 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types";
-import propertiesStyle from "./styles/properties.scss";  // Assuming you have a separate style for properties
-import contentLayoutStyle from "./styles/contentLayout.scss";  // New layout style
-import { resolveRelative, simplifySlug, SimpleSlug, FullSlug } from "../util/path";
+import style from "./styles/backlinks.scss";  // Using the same combined styles
 import { i18n } from "../i18n";
 import { classNames } from "../util/lang";
-import { DataMap } from "vfile";
 
 const Properties: QuartzComponent = ({
   fileData,
-  allFiles,
   displayClass,
   cfg,
-}: QuartzComponentProps) => {
-  const slug = simplifySlug(fileData.slug!);
-
-  // Extract original backlinks before adding new document links
-  const originalBacklinks = fileData.links || [];
-
-  // Push frontmatter links to root links and ensure uniqueness
-  allFiles.forEach((file) => {
-    const data = file as DataMap | undefined;
-    if (data?.frontmatter?.links) {
-      const frontmatterLinks: SimpleSlug[] = data.frontmatter.links.map(link => simplifySlug(link as FullSlug));
-      const uniqueLinks = new Set([...(file.links || []), ...frontmatterLinks]);
-      file.links = Array.from(uniqueLinks);
-    }
-  });
-
-  // Collect backlinks referencing the current file
-  const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug));
-
+  additionalContent,
+}: QuartzComponentProps & { additionalContent?: string }) => {
   const renderProperty = (key: string, value: any) => {
     if (key === "title") {
       return null; // Skip rendering the title property
@@ -57,7 +36,7 @@ const Properties: QuartzComponent = ({
                 const title = parts[1] || link;
                 return (
                   <div key={index}>
-                    <a href={resolveRelative(fileData.slug!, simplifySlug(link as FullSlug))} class="internal">
+                    <a href={link} class="internal">
                       {title}
                     </a>
                   </div>
@@ -98,7 +77,7 @@ const Properties: QuartzComponent = ({
           <tr key={key}>
             <td class="prop-key">{key}:</td>
             <td class="prop-value">
-              <a href={resolveRelative(fileData.slug!, simplifySlug(link as FullSlug))} class="internal">
+              <a href={link} class="internal">
                 {title}
               </a>
             </td>
@@ -126,32 +105,18 @@ const Properties: QuartzComponent = ({
     }
   };
 
-  // Create a new frontmatter object with backlinks
-  const newFrontmatter = {
-    ...fileData.frontmatter,
-    backlinks: originalBacklinks.map(link => {
-      const backlinkFile = allFiles.find(file => simplifySlug(file.slug!) === link);
-      if (backlinkFile) {
-        return {
-          title: backlinkFile.frontmatter?.title || simplifySlug(backlinkFile.slug!),
-          slug: backlinkFile.slug!,
-        };
-      }
-      return null;
-    }).filter(Boolean),
-  };
-
   return (
-    <div class={classNames(displayClass, "properties")}>
+    <div class={classNames(displayClass, "properties-container")}>
       <h3>{i18n(cfg.locale).components.backlinks.title}</h3>
       <table>
         <tbody>
-          {Object.entries(newFrontmatter).map(([key, value]) => renderProperty(key, value))}
+          {Object.entries(fileData.frontmatter || {}).map(([key, value]) => renderProperty(key, value))}
         </tbody>
       </table>
+      {additionalContent && <div dangerouslySetInnerHTML={{ __html: additionalContent }} />}
     </div>
   );
 };
 
-Properties.css = [propertiesStyle, contentLayoutStyle];  // Import both styles
+Properties.css = style;
 export default (() => Properties) satisfies QuartzComponentConstructor;
