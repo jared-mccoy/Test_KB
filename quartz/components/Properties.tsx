@@ -22,7 +22,7 @@ const Properties: QuartzComponent = ({
   const textlinks = fileData.links || [];
   console.log(`Backlinks for ${slug}: ${textlinks}`);
 
-/*   // Push frontmatter links to root links and ensure uniqueness
+  // Push frontmatter links to root links and ensure uniqueness
   allFiles.forEach((file) => {
     const data = file as DataMap | undefined;
     if (data?.frontmatter?.links) {
@@ -32,8 +32,8 @@ const Properties: QuartzComponent = ({
     }
   });
   // Collect backLinks referencing the current file and filter out the current slug
-  */
-  const backLinks: BacklinkData[] = allFiles.filter((file) => file.links?.includes(slug)/*  && simplifySlug(file.slug!) !== slug */).map((f) => ({
+ 
+  const backLinks: BacklinkData[] = allFiles.filter((file) => file.links?.includes(slug) && simplifySlug(file.slug!) !== slug).map((f) => ({
     title: f.frontmatter?.title,
     url: resolveRelative(fileData.slug!, f.slug!),
   }));
@@ -150,7 +150,7 @@ const Properties: QuartzComponent = ({
               </td>
             </tr>
           )}
-{/*           {textlinks.length > 0 && (
+          {textlinks.length > 0 && (
             <tr>
               <td class="prop-key">textlinks:</td>
               <td class="prop-value">
@@ -171,7 +171,7 @@ const Properties: QuartzComponent = ({
                 })}
               </td>
             </tr>
-          )} */}
+          )}
         </tbody>
       </table>
     </div>
