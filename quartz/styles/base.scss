@@ -149,7 +149,7 @@ a {
     @media all and (max-width: $fullPageWidth) {
       flex-direction: column;
     }
-
+  
     & .sidebar {
       flex: 1;
       display: flex;
@@ -161,6 +161,13 @@ a {
       box-sizing: border-box;
       padding: 0 4rem;
       position: fixed;
+      overflow-y: auto; /* Enable vertical scrolling */
+      max-height: calc(100vh - $topSpacing); /* Ensure the sidebar fits within the viewport considering top margin */
+      &::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+      }
+      scrollbar-width: none; /* For Firefox */
+      -ms-overflow-style: none; /* For Internet Explorer and Edge */
       @media all and (max-width: $fullPageWidth) {
         position: initial;
         flex-direction: row;
@@ -169,26 +176,37 @@ a {
         margin-top: 2rem;
       }
     }
-
+  
     & .sidebar.left {
-      left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+      left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth); // Adjust by adding 5vw to move closer to the center
       @media all and (max-width: $fullPageWidth) {
         gap: 0;
         align-items: center;
       }
     }
-
+  
     & .sidebar.right {
       right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-      flex-wrap: wrap;
+      flex-direction: column !important; /* Ensure column layout */
+      flex-wrap: nowrap !important; /* Prevent wrapping */
       & > * {
-        @media all and (max-width: $fullPageWidth) {
-          flex: 1;
-          min-width: 140px;
+        flex: initial !important;
+        min-width: initial !important;
+      }
+      @media all and (max-width: $fullPageWidth) {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        & > * {
+          flex: initial;
+          min-width: initial;
         }
       }
     }
   }
+  
+  
+  
+  
 
   & .page-header {
     width: $pageWidth;

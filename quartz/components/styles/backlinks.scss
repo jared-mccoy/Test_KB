@@ -1,15 +1,12 @@
 .backlinks {
-  position: relative;
-
   & > h3 {
     font-size: 1rem;
-    margin: 0;
+    margin: 0 0 0.5rem 0; /* Set top and side margins to 0, bottom margin to 0.5rem */
   }
 
   & > ul {
     list-style: none;
     padding: 0;
-    margin: 0.5rem 0;
 
     & > li {
       & > a {
@@ -23,24 +20,61 @@
     border-collapse: collapse;
     table-layout: fixed;
 
+    tr {
+      padding: 0; /* Remove padding */
+      margin: 0; /* Remove margin */
+    }
+
     td {
-      padding: 0.25rem 0;
+      padding: 0.25rem 0; /* Reduce padding */
       vertical-align: top;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin: 0; /* Remove margin */
+      box-sizing: border-box; /* Ensure padding/margin doesn't affect width */
+      line-height: 1.2em; /* Set line-height relative to font size */
     }
 
     .prop-key {
       font-weight: bold;
-      padding-right: 1rem;
-      max-width: 20%; /* Adjusted to 20% width */
-      width: 20%; /* Explicitly set the width to 20% */
+      max-width: 30%; /* Adjusted to 20% width */
+      width: 30%; /* Explicitly set the width to 20% */
+      margin: 0; /* Remove margin */
     }
 
     .prop-value {
-      max-width: 80%; /* Adjusted to 80% width */
-      width: 80%; /* Explicitly set the width to 80% */
+      max-width: 70%; /* Adjusted to 80% width */
+      width: 70%; /* Explicitly set the width to 80% */
+      margin: 0; /* Remove margin */
+      padding-left: 1rem; /* Add padding to the left */
+      text-overflow: ellipsis; /* Add ellipses on overflow */
     }
+
+    .prop-value a {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: top; /* Align the link vertically */
+      line-height: 1.2em; /* Set line-height relative to font size */
+    }
+  }
+
+  a.internal {
+    background-color: var(--highlight);
+    border-radius: 5px;
+    padding: 0 0.0rem;
+    line-height: 1.2em; /* Set line-height relative to font size */
+    text-decoration: none;
+  }
+
+  tbody, li, p {
+    line-height: 1.2em; /* Set line-height relative to font size */
+  }
+
+  .backlinks tbody, .backlinks li, .backlinks p {
+    line-height: 1.2em; /* Set line-height relative to font size */
   }
 }
