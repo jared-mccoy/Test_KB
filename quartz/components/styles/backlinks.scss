@@ -38,14 +38,14 @@
 
     .prop-key {
       font-weight: bold;
-      max-width: 30%; /* Adjusted to 20% width */
-      width: 30%; /* Explicitly set the width to 20% */
+      max-width: 40%; /* Adjusted to 20% width */
+      width: 40%; /* Explicitly set the width to 20% */
       margin: 0; /* Remove margin */
     }
 
     .prop-value {
-      max-width: 70%; /* Adjusted to 80% width */
-      width: 70%; /* Explicitly set the width to 80% */
+      max-width: 60%; /* Adjusted to 80% width */
+      width: 60%; /* Explicitly set the width to 80% */
       margin: 0; /* Remove margin */
       padding-left: 1rem; /* Add padding to the left */
       text-overflow: ellipsis; /* Add ellipses on overflow */

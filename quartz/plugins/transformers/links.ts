@@ -49,6 +49,33 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
               allSlugs: ctx.allSlugs,
             }
 
+            const frontmatterText = file.data.frontmatter?.text?.replace(/^---\n|---$/g, '')
+            if (frontmatterText) {
+              const frontmatterLinks = extractLinksFromFrontmatter(frontmatterText)
+              frontmatterLinks.forEach((link) => {
+                let dest = link as RelativeURL
+                const isExternal = isAbsoluteUrl(dest)
+                if (!isExternal) {
+                  dest = transformLink(
+                    file.data.slug!,
+                    dest,
+                    transformOptions,
+                  )
+
+                  const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true))
+                  const canonicalDest = url.pathname
+                  let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
+                  if (destCanonical.endsWith("/")) {
+                    destCanonical += "index"
+                  }
+
+                  const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
+                  const simple = simplifySlug(full)
+                  outgoing.add(simple)
+                }
+              })
+            }
+
             visit(tree, "element", (node, _index, _parent) => {
               // rewrite all links
               if (
@@ -163,6 +190,24 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options> | undefined> =
     },
   }
 }
+
+
+function extractLinksFromFrontmatter(frontmatter: string): string[] {
+   const wikilinkRegex = new RegExp(
+    /!?\[\[([^[\]\|#]*)(#[^[\]\|]*)?(\|[^\[\]]*(\[[^\[\]]*\])?)?\]\]/,
+    "g"
+  );
+  const links: string[] = []
+  let match
+
+  while ((match = wikilinkRegex.exec(frontmatter)) !== null) {
+    links.push(match[1].trim()) // Push the main link, trimming whitespace
+  }
+
+
+  return links
+}
+
 
 declare module "vfile" {
   interface DataMap {

@@ -158,6 +158,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
   return {
     name: "ObsidianFlavoredMarkdown",
     textTransform(_ctx, src) {
+      
 
       // do comments at text level
       if (opts.comments) {
