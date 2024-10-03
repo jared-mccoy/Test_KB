@@ -607,13 +607,13 @@ export default ((opts?: any) => {
           </footer>
   
           {/* Scripts */}
-          <script src={content.scripts.jquery}></script>
+{/*           <script src={content.scripts.jquery}></script>
           <script src={content.scripts.jqueryEasing}></script>
           <script src={content.scripts.bootstrapJS}></script>
           <script src={content.scripts.waypoints}></script>
           <script src={content.scripts.stellar}></script>
           <script src={content.scripts.countTo}></script>
-          <script src={content.scripts.mainJS}></script>
+          <script src={content.scripts.mainJS}></script> */}
         </body>
       </html>
     );
