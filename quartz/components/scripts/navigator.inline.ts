@@ -23,7 +23,7 @@ let player: YT.Player | null = null;
 let countdownInterval: number | undefined;
 let countdownTime = 10;
 
-function initializeNavigator() {
+document.addEventListener("nav", () => {
   const navigatorContainer = document.querySelector('.navigator-container') as HTMLElement;
   const scriptDataJson = navigatorContainer?.getAttribute('data-script');
   const scriptData: ScriptData | null = scriptDataJson ? JSON.parse(scriptDataJson) : null;
@@ -101,10 +101,8 @@ function initializeNavigator() {
     console.log("No sequence groups found. Skipping initialization of YouTube and advanced features.");
     return; // Exit early if no seqGroups exist
   }
-};
+});
 
-document.addEventListener('DOMContentLoaded', initializeNavigator);
-document.addEventListener('nav', initializeNavigator);
 
 
 
@@ -220,8 +218,8 @@ function setupYouTubePlayer(
     iframeParent.style.height = '100%'; // Ensure the parent div fills the height
     iframeParent.style.width = '100%'; // Ensure the parent div fills the width
     iframeParent.style.transform = 'scale(1)'; // Reset any scaling applied to the iframe
-    
     iframeParent.style.position = 'absolute'; // Ensure the parent div fills the height
+
     
     const iframeGrandparent = iframeParent.parentElement;
     iframeGrandparent!.style.position = 'relative'; 

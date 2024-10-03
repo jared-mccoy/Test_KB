@@ -9,7 +9,7 @@ import * as Plugin from "./quartz/plugins"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Surface / Scholar",
-    enableSPA: true,
+    enableSPA: false,
     enablePopovers: true,
     analytics: null,/* {
       provider: "plausible",
