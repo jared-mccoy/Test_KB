@@ -428,7 +428,7 @@ window.addEventListener('resize', moveGraphElement);
 document.addEventListener("nav", moveGraphElement);
 
 //
-window.addEventListener('resize', () => {
+/* window.addEventListener('resize', () => {
   const graphContainer = document.querySelector("#graph-container");
   const slug = getFullSlug(window)
 
@@ -437,4 +437,4 @@ window.addEventListener('resize', () => {
   }
 });
 
-
+ */
