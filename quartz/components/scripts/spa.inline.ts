@@ -105,14 +105,16 @@ async function navigate(url: URL, isBack: boolean = false) {
   // Scroll behavior: Delayed to ensure layout is fully stable
   if (!isBack) {
     if (url.hash) {
-      setTimeout(() => {
+      //setTimeout(() => {
         const el = document.getElementById(decodeURIComponent(url.hash.substring(1)));
         if (el) el.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the element
-      }, 50); // Adjust delay if necessary
+      //}, 50); // Adjust delay if necessary
     } else {
       window.scrollTo({ top: 0 });
     }
   }
+
+  
 
   // Update the head elements (remove and add new elements)
   const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])");
