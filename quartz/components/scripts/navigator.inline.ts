@@ -23,7 +23,7 @@ let player: YT.Player | null = null;
 let countdownInterval: number | undefined;
 let countdownTime = 10;
 
-document.addEventListener("nav", () => {
+function initializeNavigator() {
   const navigatorContainer = document.querySelector('.navigator-container') as HTMLElement;
   const scriptDataJson = navigatorContainer?.getAttribute('data-script');
   const scriptData: ScriptData | null = scriptDataJson ? JSON.parse(scriptDataJson) : null;
@@ -101,8 +101,10 @@ document.addEventListener("nav", () => {
     console.log("No sequence groups found. Skipping initialization of YouTube and advanced features.");
     return; // Exit early if no seqGroups exist
   }
-});
+};
 
+document.addEventListener('DOMContentLoaded', initializeNavigator);
+document.addEventListener('nav', initializeNavigator);
 
 
 
