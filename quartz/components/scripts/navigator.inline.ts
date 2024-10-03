@@ -218,7 +218,8 @@ function setupYouTubePlayer(
     iframeParent.style.height = '100%'; // Ensure the parent div fills the height
     iframeParent.style.width = '100%'; // Ensure the parent div fills the width
     iframeParent.style.transform = 'scale(1)'; // Reset any scaling applied to the iframe
-
+    
+    iframeParent.style.position = 'absolute'; // Ensure the parent div fills the height
     
     const iframeGrandparent = iframeParent.parentElement;
     iframeGrandparent!.style.position = 'relative'; 
