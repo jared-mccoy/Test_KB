@@ -34,7 +34,7 @@
 
 
 sup {
-  vertical-align: baseline; /* Keeps the superscript positioned properly */
+  vertical-align: middle; /* Keeps the superscript positioned properly */  
   //font-size: 0.65rem; /* Adjust the size if needed */
   line-height: 0; /* Prevents the superscript from increasing the line height */
 }
