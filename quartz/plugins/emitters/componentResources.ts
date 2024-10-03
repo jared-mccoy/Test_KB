@@ -242,7 +242,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           content: transform({
             filename: "index.css",
             code: Buffer.from(stylesheet),
-            minify: true,
+            minify: false,
             targets: {
               safari: (15 << 16) | (6 << 8), // 15.6
               ios_saf: (15 << 16) | (6 << 8), // 15.6
