@@ -61,7 +61,7 @@ async function joinScripts(scripts: string[]): Promise<string> {
   const script = scripts.map((script) => `(function () {${script}})();`).join("\n")
 
   const res = await transpile(script, {
-    minify: false,
+    minify: true,
     sourcemap: 'inline',  // Add this option to generate source maps
   })
 

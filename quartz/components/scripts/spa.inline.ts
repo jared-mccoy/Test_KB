@@ -54,14 +54,17 @@ let p: DOMParser
 async function navigate(url: URL, isBack: boolean = false) {
   const currentUrl = new URL(window.location.toString());
 
-  // Handle full page reload when navigating away from or to the homepage
-  if ((isHomePage(currentUrl) && !isHomePage(url))|| isHomePage(url)) {
-    // Resolve the paths for the homepage or any other page
-    const resolvedUrl = new URL(url.pathname, window.location.origin);
-    window.location.assign(resolvedUrl.toString());
+  // If navigating from the homepage to any other page, perform a full reload
+  if (isHomePage(currentUrl) && !isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating away from the homepage
+  return;
+}
+
+  // If navigating to the homepage, perform a full reload
+  if (isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating to the homepage
     return;
   }
-
 
   // Otherwise, proceed with the regular SPA navigation
   let p = new DOMParser();
@@ -202,6 +205,3 @@ if (!customElements.get("route-announcer")) {
     },
   )
 }
-
-
-

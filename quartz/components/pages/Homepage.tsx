@@ -261,6 +261,17 @@ export default ((opts?: any) => {
         <head>
           <meta charSet={content.meta.charset} />
           <meta httpEquiv={content.meta.httpEquiv} content="IE=edge" />
+          <meta
+          httpEquiv="Content-Security-Policy"
+          content="
+            default-src 'self';
+            script-src 'self' https://jared-mccoy.github.io https://cdnjs.cloudflare.com https://plausible.io;
+            style-src 'self' https://fonts.googleapis.com https://jared-mccoy.github.io https://cdnjs.cloudflare.com;
+            img-src 'self' https://jared-mccoy.github.io;
+            connect-src 'self' https://plausible.io;
+            font-src 'self' https://fonts.gstatic.com;
+          "
+        />
           <title>{content.meta.title}</title>
           <meta name="viewport" content={content.meta.viewport} />
           <meta name="description" content={content.meta.description} />
