@@ -11,9 +11,9 @@ const config: QuartzConfig = {
     pageTitle: "Surface / Scholar",
     enableSPA: true,
     enablePopovers: true,
-    analytics: {
+    analytics: null,/* {
       provider: "plausible",
-    },
+    }, */
     locale: "en-US",
     baseUrl: "quartz.jzhao.xyz",
     ignorePatterns: ["private", "templates", ".obsidian"],
