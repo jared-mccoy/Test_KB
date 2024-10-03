@@ -54,22 +54,17 @@ let p: DOMParser
 async function navigate(url: URL, isBack: boolean = false) {
   const currentUrl = new URL(window.location.toString());
 
-// If navigating from the homepage to any other page, perform a full reload
-if (isHomePage(currentUrl) && !isHomePage(url)) {
-  setTimeout(() => {
-    window.location.assign(url); // Full reload after a brief delay
-  }, 100); // 100ms delay
+  // If navigating from the homepage to any other page, perform a full reload
+  if (isHomePage(currentUrl) && !isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating away from the homepage
   return;
 }
 
-// If navigating to the homepage, perform a full reload
-if (isHomePage(url)) {
-  setTimeout(() => {
-    window.location.assign(url); // Full reload after a brief delay
-  }, 100); // 100ms delay
-  return;
-}
-
+  // If navigating to the homepage, perform a full reload
+  if (isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating to the homepage
+    return;
+  }
 
   // Otherwise, proceed with the regular SPA navigation
   let p = new DOMParser();
@@ -110,10 +105,10 @@ if (isHomePage(url)) {
   // Scroll behavior: Delayed to ensure layout is fully stable
   if (!isBack) {
     if (url.hash) {
-      setTimeout(() => {
+      //setTimeout(() => {
         const el = document.getElementById(decodeURIComponent(url.hash.substring(1)));
         if (el) el.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the element
-      }, 50); // Adjust delay if necessary
+      //}, 50); // Adjust delay if necessary
     } else {
       window.scrollTo({ top: 0 });
     }

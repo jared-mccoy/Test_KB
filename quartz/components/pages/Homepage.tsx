@@ -30,9 +30,9 @@ export const content: Record<string, any> = {
   links: {
     favicon: "favicon.ico",
     googleFont: "https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700&display=swap",
-    //animateCSS: "homepage/css/animate.css",
-    //icomoonCSS: "homepage/css/icomoon.css",
-    //lineIconsCSS: "homepage/css/simple-line-icons.css",
+    animateCSS: "homepage/css/animate.css",
+    icomoonCSS: "homepage/css/icomoon.css",
+    lineIconsCSS: "homepage/css/simple-line-icons.css",
     bootstrapCSS: "homepage/css/bootstrap.css",
     styleCSS: "homepage/css/style.css",
   },
@@ -288,9 +288,9 @@ export default ((opts?: any) => {
           <meta name="twitter:card" content={content.meta.twitter.card} />
           <link rel="shortcut icon" href={content.links.favicon} />
           <link href={content.links.googleFont} rel="stylesheet" />
-          {/* <link rel="stylesheet" href={content.links.animateCSS} />
+          <link rel="stylesheet" href={content.links.animateCSS} />
           <link rel="stylesheet" href={content.links.icomoonCSS} />
-          <link rel="stylesheet" href={content.links.lineIconsCSS} /> */}
+          <link rel="stylesheet" href={content.links.lineIconsCSS} />
           <link rel="stylesheet" href={content.links.bootstrapCSS} />
           <link rel="stylesheet" href={content.links.styleCSS} />
         </head>
@@ -607,13 +607,13 @@ export default ((opts?: any) => {
           </footer>
   
           {/* Scripts */}
-{/*           <script src={content.scripts.jquery}></script>
+          <script src={content.scripts.jquery}></script>
           <script src={content.scripts.jqueryEasing}></script>
           <script src={content.scripts.bootstrapJS}></script>
           <script src={content.scripts.waypoints}></script>
           <script src={content.scripts.stellar}></script>
           <script src={content.scripts.countTo}></script>
-          <script src={content.scripts.mainJS}></script> */}
+          <script src={content.scripts.mainJS}></script>
         </body>
       </html>
     );
