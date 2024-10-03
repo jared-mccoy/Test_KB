@@ -13,13 +13,15 @@ import Explorer from "./Explorer"
 import TagList from "./TagList"
 import Graph from "./Graph"
 import Backlinks from "./Backlinks"
-import Properties from "./Properties"
 import Search from "./Search"
 import Footer from "./Footer"
 import DesktopOnly from "./DesktopOnly"
 import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
+import Homepage from "./pages/Homepage"
+import Properties from "./Properties"
+import Navigator from "./Navigator"
 
 export {
   ArticleTitle,
@@ -36,7 +38,6 @@ export {
   TagList,
   Graph,
   Backlinks,
-  Properties,
   Search,
   Footer,
   DesktopOnly,
@@ -44,4 +45,9 @@ export {
   RecentNotes,
   NotFound,
   Breadcrumbs,
+
+  //NEW
+  Properties,
+  Navigator,
+  Homepage,
 }

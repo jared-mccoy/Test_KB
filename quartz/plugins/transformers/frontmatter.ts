@@ -135,8 +135,8 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options> | undefined> 
 declare module "vfile" {
   interface DataMap {
     frontmatter: { [key: string]: unknown } & {
-      title: string
-    } & Partial<{
+      title: string      
+    } & Partial<{      
         tags: string[]
         aliases: string[]
         description: string
@@ -147,6 +147,7 @@ declare module "vfile" {
         cssclasses: string[]
         text: string
         links: string[] // Add links here
+        title_display: string
       }>
   }
 }

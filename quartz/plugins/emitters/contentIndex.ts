@@ -122,9 +122,9 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
           linkIndex.set(slug, {
-            title: file.data.frontmatter?.title!,
+            title: file.data.frontmatter?.title_display! || file.data.frontmatter?.title!,
             links: file.data.links ?? [],
-            tags: file.data.frontmatter?.tags ?? [],
+            tags: /* file.data.frontmatter?.tags ?? */ [],
             content: file.data.text ?? "",
             richContent: opts?.rssFullHtml
               ? escapeHTML(toHtml(tree as Root, { allowDangerousHtml: true }))

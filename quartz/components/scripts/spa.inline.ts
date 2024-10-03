@@ -17,6 +17,13 @@ const isLocalUrl = (href: string) => {
   return false
 }
 
+// Helper to detect if the URL is the homepage
+const isHomePage = (url: URL) => {
+  const isHome =  url.pathname === "/" || url.pathname === "/index.html";
+  console.log("isHomePage", isHome)
+  return isHome
+};
+
 const isSamePage = (url: URL): boolean => {
   const sameOrigin = url.origin === window.location.origin
   const samePath = url.pathname === window.location.pathname
@@ -43,69 +50,82 @@ const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
 
 let p: DOMParser
+
 async function navigate(url: URL, isBack: boolean = false) {
-  p = p || new DOMParser()
+  const currentUrl = new URL(window.location.toString());
+
+  // If navigating from the homepage to any other page, perform a full reload
+  if (isHomePage(currentUrl) && !isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating away from the homepage
+    return;
+  }
+
+  // If navigating to the homepage, perform a full reload
+  if (isHomePage(url)) {
+    window.location.assign(url); // Full reload when navigating to the homepage
+    return;
+  }
+
+  // Otherwise, proceed with the regular SPA navigation
+  let p = new DOMParser();
   const contents = await fetch(`${url}`)
     .then((res) => {
-      const contentType = res.headers.get("content-type")
+      const contentType = res.headers.get("content-type");
       if (contentType?.startsWith("text/html")) {
-        return res.text()
+        return res.text();
       } else {
-        window.location.assign(url)
+        window.location.assign(url); // Fallback to a full reload if content type isn't HTML
       }
     })
     .catch(() => {
-      window.location.assign(url)
-    })
+      window.location.assign(url); // Fallback in case of error
+    });
 
-  if (!contents) return
+  if (!contents) return;
 
-  // cleanup old
-  cleanupFns.forEach((fn) => fn())
-  cleanupFns.clear()
+  // Cleanup and proceed with SPA page update
+  cleanupFns.forEach((fn) => fn());
+  cleanupFns.clear();
 
-  const html = p.parseFromString(contents, "text/html")
-  normalizeRelativeURLs(html, url)
+  const html = p.parseFromString(contents, "text/html");
+  normalizeRelativeURLs(html, url);
 
-  let title = html.querySelector("title")?.textContent
-  if (title) {
-    document.title = title
-  } else {
-    const h1 = document.querySelector("h1")
-    title = h1?.innerText ?? h1?.textContent ?? url.pathname
-  }
+  let title = html.querySelector("title")?.textContent || url.pathname;
+  document.title = title;
+
   if (announcer.textContent !== title) {
-    announcer.textContent = title
+    announcer.textContent = title;
   }
-  announcer.dataset.persist = ""
-  html.body.appendChild(announcer)
+  announcer.dataset.persist = "";
+  html.body.appendChild(announcer);
 
-  // morph body
-  micromorph(document.body, html.body)
+  // Morph the body
+  micromorph(document.body, html.body);
 
-  // scroll into place and add history
+  // Scroll behavior: Delayed to ensure layout is fully stable
   if (!isBack) {
     if (url.hash) {
-      const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
-      el?.scrollIntoView()
+      setTimeout(() => {
+        const el = document.getElementById(decodeURIComponent(url.hash.substring(1)));
+        if (el) el.scrollIntoView({ behavior: "smooth" }); // Smooth scroll to the element
+      }, 50); // Adjust delay if necessary
     } else {
-      window.scrollTo({ top: 0 })
+      window.scrollTo({ top: 0 });
     }
   }
 
-  // now, patch head
-  const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])")
-  elementsToRemove.forEach((el) => el.remove())
-  const elementsToAdd = html.head.querySelectorAll(":not([spa-preserve])")
-  elementsToAdd.forEach((el) => document.head.appendChild(el))
+  // Update the head elements (remove and add new elements)
+  const elementsToRemove = document.head.querySelectorAll(":not([spa-preserve])");
+  elementsToRemove.forEach((el) => el.remove());
+  const elementsToAdd = html.head.querySelectorAll(":not([spa-preserve])");
+  elementsToAdd.forEach((el) => document.head.appendChild(el));
 
-  // delay setting the url until now
-  // at this point everything is loaded so changing the url should resolve to the correct addresses
+  // Update the URL in history
   if (!isBack) {
-    history.pushState({}, "", url)
+    history.pushState({}, "", url);
   }
-  notifyNav(getFullSlug(window))
-  delete announcer.dataset.persist
+  notifyNav(getFullSlug(window));
+  delete announcer.dataset.persist;
 }
 
 window.spaNavigate = navigate
@@ -113,51 +133,51 @@ window.spaNavigate = navigate
 function createRouter() {
   if (typeof window !== "undefined") {
     window.addEventListener("click", async (event) => {
-      const { url } = getOpts(event) ?? {}
-      // dont hijack behaviour, just let browser act normally
-      if (!url || event.ctrlKey || event.metaKey) return
-      event.preventDefault()
+      const { url } = getOpts(event) ?? {};
+      if (!url || event.ctrlKey || event.metaKey) return; // Ignore Ctrl or Meta key clicks (open in new tab)
+      event.preventDefault();
 
+      // Handle same-page navigation with hash anchors
       if (isSamePage(url) && url.hash) {
-        const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
-        el?.scrollIntoView()
-        history.pushState({}, "", url)
-        return
+        const el = document.getElementById(decodeURIComponent(url.hash.substring(1)));
+        el?.scrollIntoView();
+        history.pushState({}, "", url);
+        return;
       }
 
+      // Perform SPA navigation unless it's the homepage or navigating from the homepage
       try {
-        navigate(url, false)
+        await navigate(url, false);
       } catch (e) {
-        window.location.assign(url)
+        window.location.assign(url); // Fallback to full page reload in case of an error
       }
-    })
+    });
 
     window.addEventListener("popstate", (event) => {
-      const { url } = getOpts(event) ?? {}
-      if (window.location.hash && window.location.pathname === url?.pathname) return
       try {
-        navigate(new URL(window.location.toString()), true)
+        const currentUrl = new URL(window.location.toString());
+        if (!isHomePage(currentUrl)) {
+          navigate(currentUrl, true);
+        } else {
+          window.location.reload(); // Reload if navigating to the homepage
+        }
       } catch (e) {
-        window.location.reload()
+        window.location.reload(); // Full page reload as a fallback
       }
-      return
-    })
+    });
   }
-
   return new (class Router {
     go(pathname: RelativeURL) {
-      const url = new URL(pathname, window.location.toString())
-      return navigate(url, false)
+      const url = new URL(pathname, window.location.toString());
+      return navigate(url, false);
     }
-
     back() {
-      return window.history.back()
+      return window.history.back();
     }
-
     forward() {
-      return window.history.forward()
+      return window.history.forward();
     }
-  })()
+  })();
 }
 
 createRouter()

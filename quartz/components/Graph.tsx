@@ -4,6 +4,12 @@ import script from "./scripts/graph.inline"
 import style from "./styles/graph.scss"
 import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
+import  Navigator from './Navigator'
+import Properties from "./Properties"
+
+const NavigatorComponent = Navigator()
+const PropertiesComponent = Properties()
+
 
 export interface D3Config {
   drag: boolean
@@ -21,11 +27,13 @@ export interface D3Config {
 }
 
 interface GraphOptions {
+  showNavigator: boolean,
   localGraph: Partial<D3Config> | undefined
   globalGraph: Partial<D3Config> | undefined
 }
 
-const defaultOptions: GraphOptions = {
+export const defaultOptions: GraphOptions = {
+  showNavigator: true,
   localGraph: {
     drag: true,
     zoom: true,
@@ -34,11 +42,11 @@ const defaultOptions: GraphOptions = {
     repelForce: 0.5,
     centerForce: 0.3,
     linkDistance: 30,
-    fontSize: 0.6,
+    fontSize: 0.5, //0.6,
     opacityScale: 1,
     showTags: true,
     removeTags: [],
-    focusOnHover: false,
+    focusOnHover: true, // false
   },
   globalGraph: {
     drag: true,
@@ -48,7 +56,7 @@ const defaultOptions: GraphOptions = {
     repelForce: 0.5,
     centerForce: 0.3,
     linkDistance: 30,
-    fontSize: 0.6,
+    fontSize: 0.5, //0.6,
     opacityScale: 1,
     showTags: true,
     removeTags: [],
@@ -57,12 +65,13 @@ const defaultOptions: GraphOptions = {
 }
 
 export default ((opts?: GraphOptions) => {
-  const Graph: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
+  const Graph: QuartzComponent = (props: QuartzComponentProps) => {
+    const { displayClass, cfg } = props
     const localGraph = { ...defaultOptions.localGraph, ...opts?.localGraph }
     const globalGraph = { ...defaultOptions.globalGraph, ...opts?.globalGraph }
     return (
       <div class={classNames(displayClass, "graph")}>
-        <h3>{i18n(cfg.locale).components.graph.title}</h3>
+        {/* <h3>{i18n(cfg.locale).components.graph.title}</h3> */}
         <div class="graph-outer">
           <div id="graph-container" data-cfg={JSON.stringify(localGraph)}></div>
           <svg
@@ -94,6 +103,9 @@ export default ((opts?: GraphOptions) => {
         <div id="global-graph-outer">
           <div id="global-graph-container" data-cfg={JSON.stringify(globalGraph)}></div>
         </div>
+        {opts?.showNavigator !== false && <NavigatorComponent {...props} />}
+        {opts?.showNavigator !== false && <PropertiesComponent {...props} />}
+
       </div>
     )
   }

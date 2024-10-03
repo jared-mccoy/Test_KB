@@ -51,7 +51,7 @@ export class FileNode {
   constructor(slugSegment: string, displayName?: string, file?: QuartzPluginData, depth?: number) {
     this.children = []
     this.name = slugSegment
-    this.displayName = displayName ?? file?.frontmatter?.title ?? slugSegment
+    this.displayName = displayName ?? file?.frontmatter?.title_display ?? file?.frontmatter?.title ?? slugSegment
     this.file = file ? clone(file) : null
     this.depth = depth ?? 0
   }
@@ -67,7 +67,7 @@ export class FileNode {
     if (fileData.path.length === 1) {
       if (nextSegment === "") {
         // index case (we are the root and we just found index.md), set our data appropriately
-        const title = fileData.file.frontmatter?.title
+        const title = fileData.file.frontmatter?.title_display ?? fileData.file.frontmatter?.title 
         if (title && title !== "index") {
           this.displayName = title
         }

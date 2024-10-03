@@ -5,8 +5,8 @@ import { QuartzEmitterPlugin } from "../types"
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
-import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
+import styles from "../../styles/custom.scss"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import { googleFontHref, joinStyles } from "../../util/theme"
@@ -60,9 +60,9 @@ async function joinScripts(scripts: string[]): Promise<string> {
   // wrap with iife to prevent scope collision
   const script = scripts.map((script) => `(function () {${script}})();`).join("\n")
 
-  // minify with esbuild
   const res = await transpile(script, {
     minify: true,
+    sourcemap: 'inline',  // Add this option to generate source maps
   })
 
   return res.code

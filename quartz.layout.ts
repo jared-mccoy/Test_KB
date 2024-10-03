@@ -18,35 +18,44 @@ export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     //Component.Breadcrumbs(),
     Component.ArticleTitle(),
-    Component.ContentMeta(),
-    Component.TagList(),
+    //Component.ContentMeta(),
+    //Component.TagList(),
   ],
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),
+    //Component.DesktopOnly(Component.Graph()),
     Component.Search(),
-    Component.Darkmode(),
-    Component.DesktopOnly(Component.Explorer()),
+    Component.Graph(),
+    //Component.Darkmode(),
+    //Component.DesktopOnly(Component.Navigator()),
+    Component.DesktopOnly(Component.TableOfContents()),
+    //Component.Properties(),
   ],
   right: [
-    Component.Graph(),
-    Component.Properties(),
+    //Component.MobileOnly(Component.Graph()),
+    //Component.Properties(),
     //Component.Backlinks(),
-    Component.DesktopOnly(Component.TableOfContents()),
   ],
 }
+
+// NOTE: When Nesting components (e.g. Search > Darkmode, Graph > Navigator), the quick fix is to add the nested component to the listPage layout as a root component (which triggers loading of scripts and stylesheets). TODO add a way to load js/css for nested scripts automatically (see homepage.tsx). 
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     //Component.Breadcrumbs(), 
     Component.ArticleTitle(), 
-    Component.ContentMeta()],
+    Component.ContentMeta(),
+    Component.Homepage(),
+  ],
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),
-    Component.Search(),
+    Component.Search(),    
     Component.Darkmode(),
+    Component.Navigator(),
+    Component.Properties(),
     Component.DesktopOnly(Component.Explorer()),
   ],
   right: [],

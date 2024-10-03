@@ -117,12 +117,12 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         fps.push(fp)
       }
 
-      if (!containsIndex && !ctx.argv.fastRebuild) {
-        console.log(
+      if (!containsIndex && !ctx.argv.fastRebuild) { // TODO add intelligent disabling of this warning
+ /*        console.log(
           chalk.yellow(
             `\nWarning: you seem to be missing an \`index.md\` home page file at the root of your \`${ctx.argv.directory}\` folder. This may cause errors when deploying.`,
           ),
-        )
+        ) */
       }
 
       return fps

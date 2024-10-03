@@ -1,0 +1,87 @@
+// homepage
+
+import { QuartzEmitterPlugin } from "../types"
+import { FilePath, FullSlug } from "../../util/path"
+import { write } from "./helpers"
+import DepGraph from "../../depgraph"
+import * as fs from "fs"
+import * as path from "path"
+import { fileURLToPath } from "url"
+
+// Replace __dirname with this for ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Path to homepage static assets
+const homepageSrcDir = path.resolve(__dirname, "../../homepage")
+const homepageDestDir = path.resolve(__dirname, "../../public/homepage")
+
+export const Homepage: QuartzEmitterPlugin = () => {
+  return {
+    name: "Homepage",
+    getQuartzComponents() {
+      return []
+    },
+    async getDependencyGraph(_ctx, _content, _resources) {
+      return new DepGraph<FilePath>()
+    },
+    async emit(ctx, _content, resources): Promise<FilePath[]> {
+      try {
+        console.log(`Copying homepage assets from ${homepageSrcDir} to ${homepageDestDir}`)
+
+        // Ensure the target directory is created
+        await fs.promises.mkdir(homepageDestDir, { recursive: true })
+
+        // Copy the homepage directory contents
+        await copyDirectory(homepageSrcDir, homepageDestDir)
+
+        console.log("Homepage assets successfully copied.")
+
+        // Read the original index.html file
+        const indexSrc = path.join(homepageSrcDir, "index.html")
+        const indexDest = path.join(ctx.argv.output, "index.html")
+        let indexContent = await fs.promises.readFile(indexSrc, "utf-8")
+
+        // Update relative paths to be prefixed with /homepage/
+        indexContent = indexContent.replace(/(href|src)="(css|js|images|fonts|sass)\/([^"]+)"/g, '$1="/homepage/$2/$3"')
+
+        // Additional regex to handle images that are not being caught
+        indexContent = indexContent.replace(/(url\(['"]?)(images\/[^'")]+)(['"]?\))/g, '$1/homepage/$2$3')
+
+        // Write the modified index.html to the root directory
+        await fs.promises.writeFile(indexDest, indexContent, "utf-8")
+
+        console.log(`Updated index.html and moved to ${indexDest}`)
+
+        return [indexDest as FilePath]
+      } catch (error) {
+        console.error("Error during emit:", error)
+        return []
+      }
+    },
+  }
+}
+
+// Function to recursively copy a directory with error handling and logging
+async function copyDirectory(src: string, dest: string) {
+  try {
+    await fs.promises.mkdir(dest, { recursive: true })
+    const entries = await fs.promises.readdir(src, { withFileTypes: true })
+
+    for (const entry of entries) {
+      const srcPath = path.join(src, entry.name)
+      const destPath = path.join(dest, entry.name)
+
+      if (entry.isDirectory()) {
+        console.log(`Copying directory: ${srcPath} -> ${destPath}`)
+        await copyDirectory(srcPath, destPath)
+      } else {
+        console.log(`Copying file: ${srcPath} -> ${destPath}`)
+        await fs.promises.copyFile(srcPath, destPath)
+      }
+    }
+  } catch (err) {
+    console.error(`Error copying directory: ${src} -> ${dest}`, err)
+    throw err
+  }
+}

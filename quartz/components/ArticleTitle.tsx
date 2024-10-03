@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { classNames } from "../util/lang"
 
 const ArticleTitle: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
-  const title = fileData.frontmatter?.title
+  const title = fileData.frontmatter?.title_display ?? fileData.frontmatter?.title
   if (title) {
     return <h1 class={classNames(displayClass, "article-title")}>{title}</h1>
   } else {
@@ -12,7 +12,9 @@ const ArticleTitle: QuartzComponent = ({ fileData, displayClass }: QuartzCompone
 
 ArticleTitle.css = `
 .article-title {
-  margin: 1rem 0 0 0;
+  padding: 10px 0;
+  font-weight: normal;
+  margin: 0;
 }
 `
 

@@ -1,0 +1,597 @@
+/// <reference types="youtube" />
+
+interface ScriptData {
+  slug: string;
+  seqGroups: SeqGroup[];
+  allFiles: FileData[];
+}
+
+interface SeqGroup {
+  title: string;
+  id: string;
+  type: string;
+  items: string[];
+}
+
+interface FileData {
+  slug: string;
+  frontmatter: Record<string, any>;
+}
+
+// Encapsulated player and countdown variables
+let player: YT.Player | null = null; 
+let countdownInterval: number | undefined;
+let countdownTime = 10;
+
+document.addEventListener("nav", () => {
+  const navigatorContainer = document.querySelector('.navigator-container') as HTMLElement;
+  const scriptDataJson = navigatorContainer?.getAttribute('data-script');
+  const scriptData: ScriptData | null = scriptDataJson ? JSON.parse(scriptDataJson) : null;
+
+  // Clear existing countdown interval if it exists
+  if (countdownInterval !== undefined) {
+    clearInterval(countdownInterval);
+    countdownInterval = undefined;
+    console.log('Countdown cancelled due to navigation event.');
+  }
+
+
+  if (scriptData && scriptData.seqGroups.length > 0) {
+    const { slug, seqGroups, allFiles } = scriptData;
+    
+
+    let selectedSeqGroup = localStorage.getItem('selectedSeqGroup');
+    const groupKeys = ['group_has', 'series_has'];
+
+    // Find relevant groups (those where the current slug is in group.items or the group itself matches the slug)
+    const relevantGroups = seqGroups.filter(group => group.id === slug || group.items.includes(slug));
+
+    if (!selectedSeqGroup || !relevantGroups.some(g => g.title === selectedSeqGroup)) {
+      selectedSeqGroup = relevantGroups.length > 0 ? relevantGroups[0].title : 'Off';
+      localStorage.setItem('selectedSeqGroup', selectedSeqGroup);
+    }
+
+    const autoplayCheckbox = document.getElementById('autoplay-checkbox') as HTMLInputElement;
+    const isAutoplayEnabled = localStorage.getItem('autoplay') === 'true';
+
+    if (autoplayCheckbox) {
+      autoplayCheckbox.checked = isAutoplayEnabled;
+      autoplayCheckbox.addEventListener('change', () => {
+        localStorage.setItem('autoplay', autoplayCheckbox.checked ? 'true' : 'false');
+      });
+    }
+
+    const seqGroupSelect = navigatorContainer.querySelector('.seqgroup-selector') as HTMLSelectElement;
+    if (seqGroupSelect) {
+      // Populate the dropdown with relevant groups (those that match slug in either id or items)
+      seqGroupSelect.innerHTML = relevantGroups
+        .map(group => `<option value="${group.title}">${group.title}</option>`)
+        .join('');
+      seqGroupSelect.innerHTML += '<option value="Off">Off</option>';
+
+      seqGroupSelect.value = selectedSeqGroup;
+
+      seqGroupSelect.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        localStorage.setItem('selectedSeqGroup', target.value);
+        renderItems(target.value, seqGroups, slug, navigatorContainer, allFiles);
+
+        if (target.value !== 'Off') {
+          autoplayCheckbox.checked = true;
+          localStorage.setItem('autoplay', 'true');
+        } else {
+          autoplayCheckbox.checked = false;
+          localStorage.setItem('autoplay', 'false');
+        }
+
+        const newGroup = relevantGroups.find(g => g.title === target.value);
+        if (newGroup) {
+          setupYouTubePlayer(slug, newGroup, allFiles, navigatorContainer, autoplayCheckbox.checked);
+        }
+      });
+    }
+
+    renderItems(selectedSeqGroup, seqGroups, slug, navigatorContainer, allFiles);
+
+    const currentGroup = relevantGroups.find(g => g.title === selectedSeqGroup);
+    if (currentGroup) {
+      setupYouTubePlayer(slug, currentGroup, allFiles, navigatorContainer, isAutoplayEnabled);
+    }
+  } else {
+    console.log("No sequence groups found. Skipping initialization of YouTube and advanced features.");
+    return; // Exit early if no seqGroups exist
+  }
+});
+
+
+
+
+
+function resolveRelative(currentPath: string, targetPath: string): string {
+  const currentUrl = new URL(currentPath, window.location.origin);
+  const targetUrl = new URL(targetPath, window.location.origin);
+  return targetUrl.pathname;
+}
+
+function simplifySlug(slug: string): string {
+  return slug.replace(/^\//, '').replace(/\.html$/, '');
+}
+
+function getNextVideoSlug(
+  currentSlug: string,
+  selectedGroup: SeqGroup  // Use the selected group only
+): string | null {
+  const index = selectedGroup.items.findIndex((item) => item === currentSlug);
+  if (index !== -1 && index < selectedGroup.items.length - 1) {
+    return selectedGroup.items[index + 1];
+  }
+  return null;
+}
+
+function getPreviousVideoSlug(
+  currentSlug: string,
+  selectedGroup: SeqGroup  // Use the selected group only
+): string | null {
+  const index = selectedGroup.items.findIndex((item) => item === currentSlug);
+  if (index > 0) {
+    return selectedGroup.items[index - 1];
+  }
+  return null;
+}
+
+function getUrlFromSlug(slug: string): string {
+  return `/${slug}.html`;
+}
+
+function loadYouTubeAPI(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if ((window as any).YT && (window as any).YT.Player) {
+      console.log('YouTube API already loaded.');
+      resolve();
+      return;
+    }
+
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    tag.id = 'youtube-api';
+
+    (window as any).onYouTubeIframeAPIReady = () => {
+      console.log('YouTube API loaded.');
+      resolve();
+    };
+
+    tag.onerror = () => {
+      console.error('Failed to load YouTube IFrame API.');
+      reject(new Error('Failed to load YouTube IFrame API'));
+    };
+
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    if (firstScriptTag && firstScriptTag.parentNode) {
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    } else {
+      document.head.appendChild(tag);
+    }
+  });
+}
+
+function setupYouTubePlayer(
+  currentSlug: string,
+  selectedGroup: SeqGroup,
+  allFiles: FileData[],
+  navigatorContainer: HTMLElement,
+  isAutoplayEnabled: boolean
+) {
+  const articleIframe = document.querySelector('article.popover-hint iframe[src*="youtube.com"]') as HTMLIFrameElement | null;
+
+  if (articleIframe && articleIframe.parentElement) {
+    const originalSrc = articleIframe.src;
+    const url = new URL(originalSrc);
+
+    // Extract video ID from both the embed URL and the standard URL
+    let videoId = url.searchParams.get('v') || ''; // For ?v=VIDEO_ID format
+    if (!videoId) {
+      const pathSegments = url.pathname.split('/');
+      // Check if the URL is in /embed/VIDEO_ID format
+      if (pathSegments.length > 1 && pathSegments.includes('embed')) {
+        videoId = pathSegments[pathSegments.length - 1]; // Extract last segment as video ID
+      }
+    }
+
+    const params = new URLSearchParams(url.search);
+    params.set('autoplay', isAutoplayEnabled ? '1' : '0');  // Set autoplay based on the checkbox
+
+    // Create a new div to hold the iframe with relative positioning
+    const playerContainer = document.createElement('div');
+    playerContainer.id = 'player-container';
+    playerContainer.style.position = 'relative';
+    playerContainer.style.width = '100%';
+    playerContainer.style.height = '100%';
+
+    // Set the iframe's z-index to 1 (behind the menu)
+    articleIframe.style.zIndex = '1';
+    articleIframe.style.position = 'absolute'; // Ensure iframe is positioned absolutely
+    
+    // Replace the original iframe with the player container
+    const iframeParent = articleIframe.parentElement;
+    iframeParent.id = 'iframe-parent';
+    iframeParent.replaceChild(playerContainer, articleIframe);    
+    iframeParent.style.height = '100%'; // Ensure the parent div fills the height
+    iframeParent.style.width = '100%'; // Ensure the parent div fills the width
+    iframeParent.style.transform = 'scale(1)'; // Reset any scaling applied to the iframe
+
+    
+    const iframeGrandparent = iframeParent.parentElement;
+    iframeGrandparent!.style.position = 'relative'; 
+    iframeGrandparent!.style.width = '100%';
+
+    // Append the iframe inside the player container
+    playerContainer.appendChild(articleIframe);
+
+    // Load YouTube API and initialize the player
+    loadYouTubeAPI().then(() => {
+      initializePlayer(videoId, params, currentSlug, selectedGroup, allFiles, navigatorContainer);
+    });
+
+    // Ensure the menu container will appear in front of the iframe
+    const menuContainer = document.getElementById('player-menu-container');
+    if (menuContainer) {
+      menuContainer.style.zIndex = '10'; // Set the menu's z-index higher than the iframe
+      menuContainer.style.position = 'absolute'; // Ensure it's positioned correctly
+    }
+  } else {
+    console.error('No iframe found or iframe parent element is missing.');
+  }
+}
+
+
+function initializePlayer(
+  videoId: string,
+  params: URLSearchParams,
+  currentSlug: string,
+  selectedGroup: SeqGroup,  // Pass the selected group
+  allFiles: FileData[],
+  navigatorContainer: HTMLElement
+) {
+  console.log('Initializing YouTube Player with video ID:', videoId);
+
+  player = new YT.Player('player-container', {
+    videoId: videoId,
+    playerVars: Object.fromEntries(params.entries()),
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': (event: YT.OnStateChangeEvent) => onPlayerStateChange(event, currentSlug, selectedGroup, allFiles, navigatorContainer),
+    }
+  });
+}
+
+function onPlayerReady(event: YT.PlayerEvent) {
+  console.log('YouTube Player is ready.');
+  const desiredQuality = 'hd1080';
+  event.target.setPlaybackQuality(desiredQuality);
+  console.log(`Playback quality set to ${desiredQuality}.`);
+}
+
+function onPlayerStateChange(
+  event: YT.OnStateChangeEvent,
+  currentSlug: string,
+  selectedGroup: SeqGroup,
+  allFiles: FileData[],
+  navigatorContainer: HTMLElement
+) {
+  console.log('Player state changed to:', event.data);
+  if (event.data === YT.PlayerState.ENDED) {
+    console.log('Video ended. Exiting fullscreen and showing menu.');
+
+    // Exit fullscreen if the video ends while in fullscreen mode
+    if (document.fullscreenElement) {
+      document.exitFullscreen().then(() => {
+        console.log('Exited fullscreen mode.');
+      }).catch((err) => {
+        console.error('Error attempting to exit fullscreen:', err);
+      });
+    }
+
+    // Show the menu and start the countdown
+    showMenu(currentSlug, selectedGroup, allFiles);
+    startCountdown(currentSlug, selectedGroup, allFiles);
+  }
+}
+
+function startCountdown(
+  currentSlug: string,
+  selectedGroup: SeqGroup,
+  allFiles: FileData[]
+) {
+  console.log('Starting countdown.');
+  const nextLink = document.getElementById("next-link") as HTMLAnchorElement;
+  const currentUrl = window.location.pathname;
+
+  if (!nextLink || !nextLink.href || nextLink.style.display === "none") {
+    console.log("Next link is not available.");
+    return;
+  }
+
+  if (nextLink.href === currentUrl || nextLink.href === getUrlFromSlug(currentSlug)) {
+    console.error("Next link points to the current page. Preventing redirect to avoid infinite loop.");
+    return;
+  }
+
+  if (countdownInterval !== undefined) {
+    clearInterval(countdownInterval);
+    countdownInterval = undefined;
+    console.log('Existing countdown interval cleared.');
+  }
+
+  const nextIcon = nextLink.querySelector(".icon") as HTMLElement;
+  if (nextIcon) {
+    nextIcon.classList.add("strobe");
+  }
+
+  countdownInterval = window.setInterval(() => {
+    countdownTime--;
+    if (countdownTime <= 0) {
+      clearInterval(countdownInterval);
+      if (nextLink.href !== currentUrl) {
+        console.log('Navigating to next video:', nextLink.href);
+        window.location.href = nextLink.href;
+      } else {
+        console.error("Next link still points to the current page after countdown.");
+      }
+    }
+  }, 1000);
+}
+
+function showMenu(
+  currentSlug: string,
+  selectedGroup: SeqGroup,  // Change to a single selected group
+  allFiles: FileData[]
+) {
+  console.log('Displaying navigation menu.');
+  
+  let menuContainer = document.getElementById("player-menu-container");
+  
+  // If menu container doesn't exist, create it
+  if (!menuContainer) {
+    console.log('No existing menu-container found. Creating a new one.');
+
+    menuContainer = document.createElement("div");
+    menuContainer.id = "player-menu-container";
+    menuContainer.className = "menu-container";
+
+    // Use slugs for prev/next links
+    const nextSlug = getNextVideoSlug(currentSlug, selectedGroup);
+    const prevSlug = getPreviousVideoSlug(currentSlug, selectedGroup);
+
+    const nextUrl = nextSlug ? getUrlFromSlug(nextSlug) : "#";
+    const prevUrl = prevSlug ? getUrlFromSlug(prevSlug) : "#";
+
+    // Get YouTube video IDs for thumbnails
+    const nextYouTubeId = nextSlug ? extractYouTubeIdFromFrontmatter(nextSlug, allFiles) : null;
+    const prevYouTubeId = prevSlug ? extractYouTubeIdFromFrontmatter(prevSlug, allFiles) : null;
+    const currentYouTubeId = extractYouTubeIdFromFrontmatter(currentSlug, allFiles);
+
+    // Titles for prev, current, next
+    const nextTitle = nextSlug ? allFiles.find(f => f.slug === nextSlug)?.frontmatter?.title_display || nextSlug : '';
+    const prevTitle = prevSlug ? allFiles.find(f => f.slug === prevSlug)?.frontmatter?.title_display || prevSlug : '';
+    const currentTitle = allFiles.find(f => f.slug === currentSlug)?.frontmatter?.title_display || currentSlug;
+
+    // URLs for thumbnails
+    const nextThumbUrl = nextYouTubeId ? `https://img.youtube.com/vi/${nextYouTubeId}/maxresdefault.jpg` : null;
+    const prevThumbUrl = prevYouTubeId ? `https://img.youtube.com/vi/${prevYouTubeId}/maxresdefault.jpg` : null;
+    const currentThumbUrl = currentYouTubeId ? `https://img.youtube.com/vi/${currentYouTubeId}/maxresdefault.jpg` : null;
+
+    menuContainer.innerHTML = `
+    <div class="menu-content">
+      <div class="nav-buttons">
+      ${prevSlug && prevYouTubeId ? `
+        <div class="nav-group">
+            <a href="${prevUrl}" id="prev-link" class="nav-button">
+              <span class="icon arrow-icon">◀️</span>
+              <img src="${prevThumbUrl}" alt="Previous video thumbnail" class="thumbnail">
+            </a>
+            <div class="video-title">${prevTitle}</div>
+            </div>
+        ` : ''}
+        ${currentSlug && currentYouTubeId ? `
+        <div class="nav-group">
+          <a href="javascript:void(0);" id="replay-button" class="nav-button">
+            <span class="icon arrow-icon">↻</span>
+            <img src="${currentThumbUrl}" alt="Current video thumbnail" class="thumbnail">
+          </a>
+          <div class="video-title">${currentTitle}</div>
+        </div>
+        ` : ''}
+        ${nextSlug && nextYouTubeId ? `
+          <div class="nav-group next-selected">
+            <a href="${nextUrl}" id="next-link" class="nav-button">
+              <span class="icon arrow-icon">▶️</span>
+              <img src="${nextThumbUrl}" alt="Next video thumbnail" class="thumbnail">
+            </a>
+            <div class="video-title">${nextTitle}</div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+    // Locate the iframe
+    const playerContainer = document.getElementById('player-container');
+    if (playerContainer) {
+      const grandParent = playerContainer.parentElement?.parentElement;
+      if (grandParent) {
+        grandParent.style.position = 'relative';
+        grandParent.appendChild(menuContainer);
+        console.log('Menu-container appended to the iframe\'s grandparent.');
+      } else {
+        console.error('Iframe grandparent not found. Cannot append menu.');
+        return;
+      }
+    } else {
+      console.error('Player container not found. Cannot append menu.');
+      return;
+    }
+
+    // Add event listeners
+    addMenuEventListeners(menuContainer, currentSlug, selectedGroup, allFiles);
+  } else {
+    // If the menu already exists, just show it
+    menuContainer.style.display = "flex";
+    console.log('Existing menu-container found and displayed.');
+  }
+
+}
+
+// Event listeners for menu interactions
+function addMenuEventListeners(menuContainer: HTMLElement, currentSlug: string, selectedGroup: SeqGroup, allFiles: FileData[]) {
+
+  const replayButton = menuContainer.querySelector("#replay-button") as HTMLButtonElement;
+
+  if (replayButton) {
+    replayButton.addEventListener("click", () => {
+      console.log('Replay button clicked.');
+      const playerMenuContainer = document.getElementById('player-menu-container');
+      playerMenuContainer!.style.display = "none";     
+
+      if (player) {
+        player.seekTo(0, false);
+        player.playVideo();
+      }
+    });
+  }
+
+  const prevLink = menuContainer.querySelector("#prev-link") as HTMLAnchorElement;
+  const nextLink = menuContainer.querySelector("#next-link") as HTMLAnchorElement;
+
+  if (prevLink) {
+    prevLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log('Previous link clicked. Navigating to:', prevLink.href);
+      window.location.href = prevLink.href;
+    });
+  }
+
+  if (nextLink) {
+    nextLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log('Next link clicked. Navigating to:', nextLink.href);
+      window.location.href = nextLink.href;
+    });
+  }
+}
+
+function extractYouTubeIdFromFrontmatter(slug: string, allFiles: { slug: string; frontmatter: { resource?: string[] } }[]): string | null {
+  const file = allFiles.find((f) => f.slug === slug);
+
+  if (file && file.frontmatter && file.frontmatter.resource) {
+    const youtubeIdPattern = /^[a-zA-Z0-9_-]{11}$/;
+    let extractedId = null;
+
+    const extractYoutubeIdFromUrl = (url: string): string | null => {
+      try {
+        const parsedUrl = new URL(url);
+        const hostname = parsedUrl.hostname;
+
+        if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
+          if (parsedUrl.pathname === '/watch') {
+            const videoId = parsedUrl.searchParams.get('v');
+            return videoId && youtubeIdPattern.test(videoId) ? videoId : null;
+          } else if (parsedUrl.pathname.startsWith('/embed/')) {
+            const embedId = parsedUrl.pathname.split('/')[2];
+            return embedId && youtubeIdPattern.test(embedId) ? embedId : null;
+          }
+        } else if (hostname === 'youtu.be') {
+          const shortId = parsedUrl.pathname.substring(1);
+          return shortId && youtubeIdPattern.test(shortId) ? shortId : null;
+        }
+      } catch (e) {
+        return youtubeIdPattern.test(url) ? url : null;
+      }
+      return null;
+    };
+
+    const youtubeId = file.frontmatter.resource.find((res) => {
+      extractedId = extractYoutubeIdFromUrl(res);
+      console.log("Final extracted ID:", extractedId);
+    
+      if (extractedId /* && youtubeIdPattern.test(extractedId) */) {
+        return extractedId;
+      }    
+      return null;  // Ensure find skips invalid matches
+    });
+    
+    console.log("Returning YouTube ID:", youtubeId);
+    return extractedId || null;
+    
+  }
+
+  return null;
+}
+
+function renderItems(
+  selectedSeqGroup: string,
+  seqGroups: SeqGroup[],
+  slug: string,
+  navigatorContainer: HTMLElement,
+  allFiles: FileData[]
+) {
+  const currentGroup = seqGroups.find(g => g.title === selectedSeqGroup);
+  if (!currentGroup) return;
+
+  const existingList = navigatorContainer.querySelector('.seqgroup-items') as HTMLElement | null;
+  if (existingList) existingList.remove();
+
+  if (selectedSeqGroup !== 'Off') {
+    const container = document.createElement('select'); // Use <select> for drop-down
+    container.className = 'seqgroup-items';
+  
+    currentGroup.items.forEach((itemId: string) => {
+      const itemFile = allFiles.find(f => f.slug === itemId);
+      if (itemFile) {
+        const title = itemFile.frontmatter.title_display || itemFile.frontmatter.title || itemId;
+        const url = resolveRelative(slug, itemFile.slug);
+        const isActive = simplifySlug(itemFile.slug) === simplifySlug(slug);
+  
+        const option = document.createElement('option');
+        option.value = url; // Store the URL as the value of the <option>
+        option.textContent = title;
+  
+        if (isActive) {
+          option.selected = true; // Mark the current item as selected
+        }
+  
+        container.appendChild(option);
+      }
+    });
+  
+    container.addEventListener('change', (event) => {
+      const target = event.target as HTMLSelectElement;
+      console.log('Selected item:', target.value);
+      window.location.href = target.value; // Redirect to the selected URL
+    });
+  
+    navigatorContainer.appendChild(container);
+  }
+
+  function moveGraphElement() {
+    const graphElement = document.querySelector('.graph');
+    const leftSidebar = document.querySelector('.sidebar.left');
+    const rightSidebar = document.querySelector('.sidebar.right');
+  
+    if (!graphElement || !leftSidebar || !rightSidebar) return;
+  
+    const leftSidebarPosition = window.getComputedStyle(leftSidebar).position;
+  
+    if (leftSidebarPosition === 'fixed') {
+      if (!leftSidebar.contains(graphElement)) {
+        graphElement.insertBefore(graphElement, leftSidebar.lastChild); // Always position before last child
+      }
+    } else {
+      if (!rightSidebar.contains(graphElement)) {
+        rightSidebar.insertBefore(graphElement, rightSidebar.lastChild); // Position in right sidebar
+      }
+    }
+  }
+
+
+}
+

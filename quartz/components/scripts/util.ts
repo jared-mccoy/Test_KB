@@ -23,3 +23,24 @@ export function removeAllChildren(node: HTMLElement) {
     node.removeChild(node.firstChild)
   }
 }
+
+export function extractFilename(mediaEntry: string | string[]): string {
+  const toKebabCase = (str: string) =>
+    str
+      //.toLowerCase()
+      //.replace(/[^\w\s-]/g, '') // Remove non-alphanumeric characters (except spaces and hyphens)
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      //.replace(/-+/g, '-'); // Replace multiple hyphens with a single hyphen
+
+  const mediaArray = Array.isArray(mediaEntry) ? mediaEntry : [mediaEntry];
+  const entry = mediaArray[0].trim(); // Use the first available entry
+
+  // Regex pattern to extract the filename, handling wiki links and aliases
+  const wikiLinkPattern = /^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$/;
+  const match = entry.match(wikiLinkPattern);
+  
+  let filename = match ? match[1].trim() : entry.split('|')[0].trim();
+  filename = toKebabCase(filename);
+
+  return filename;
+}

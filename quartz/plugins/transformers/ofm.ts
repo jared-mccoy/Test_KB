@@ -448,40 +448,58 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
               const [firstLine, ...remainingLines] = text.split("\n")
               const remainingText = remainingLines.join("\n")
 
-              const match = firstLine.match(calloutRegex)
+              const match = firstLine.match(calloutRegex);
               if (match && match.input) {
-                const [calloutDirective, typeString, calloutMetaData, collapseChar] = match
-                const calloutType = canonicalizeCallout(typeString.toLowerCase())
-                const collapse = collapseChar === "+" || collapseChar === "-"
-                const defaultState = collapseChar === "-" ? "collapsed" : "expanded"
-                const titleContent = match.input.slice(calloutDirective.length).trim()
-                const useDefaultTitle = titleContent === "" && restOfTitle.length === 0
+                const [calloutDirective, typeString, calloutMetaData, collapseChar] = match;
+                
+                // Canonicalize the callout type
+                const calloutType = canonicalizeCallout(typeString.toLowerCase());
+                const collapse = collapseChar === "+" || collapseChar === "-";
+                const defaultState = collapseChar === "-" ? "collapsed" : "expanded";
+                
+                const titleContent = match.input.slice(calloutDirective.length).trim();
+                const useDefaultTitle = titleContent === "" && restOfTitle.length === 0;
+
+                // Utility function to convert a string to Title Case
+                const toTitleCase = (str: string): string => {
+                  return str
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(" ");
+                }
+
+              
+                // Capitalize title content (Title Case)
                 const titleNode: Paragraph = {
                   type: "paragraph",
                   children: [
                     {
                       type: "text",
-                      value: useDefaultTitle ? capitalize(typeString) : titleContent + " ",
+                      value: useDefaultTitle ? toTitleCase(typeString) : toTitleCase(titleContent) + " ",
                     },
                     ...restOfTitle,
                   ],
-                }
-                const title = mdastToHtml(titleNode)
-
-                const toggleIcon = `<div class="fold-callout-icon"></div>`
-
+                };
+              
+                const title = mdastToHtml(titleNode);
+              
+                // Remove icon for callouts not recognized by the mapping
+                const showIcon = calloutType in calloutMapping;
+                const calloutIconHtml = showIcon ? `<div class="callout-icon"></div>` : "";
+                const toggleIcon = `<div class="fold-callout-icon"></div>`;
+              
+                // Title HTML with optional icon and collapse toggle
                 const titleHtml: Html = {
                   type: "html",
-                  value: `<div
-                  class="callout-title"
-                >
-                  <div class="callout-icon"></div>
-                  <div class="callout-title-inner">${title}</div>
-                  ${collapse ? toggleIcon : ""}
-                </div>`,
-                }
-
-                const blockquoteContent: (BlockContent | DefinitionContent)[] = [titleHtml]
+                  value: `<div class="callout-title">
+                            ${calloutIconHtml}
+                            <div class="callout-title-inner">${title}</div>
+                            ${collapse ? toggleIcon : ""}
+                          </div>`,
+                };
+              
+                // Create blockquote content with the title HTML and remaining text
+                const blockquoteContent: (BlockContent | DefinitionContent)[] = [titleHtml];
                 if (remainingText.length > 0) {
                   blockquoteContent.push({
                     type: "paragraph",
@@ -491,8 +509,9 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                         value: remainingText,
                       },
                     ],
-                  })
+                  });
                 }
+              
 
                 // replace first line of blockquote with title and rest of the paragraph text
                 node.children.splice(0, 1, ...blockquoteContent)

@@ -2,37 +2,55 @@
 
 .search {
   min-width: fit-content;
-  max-width: 14rem;
-  flex-grow: 0.3;
+  //max-width: 100%;
+  //max-width: 12rem;
+  //flex-grow: 0.3;
+  box-sizing: border-box;
+  z-index: 2000;
 
-  & > #search-icon {
-    background-color: var(--lightgray);
-    border-radius: 4px;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    white-space: nowrap;
+  & > #search-wrapper{
 
-    & > div {
-      flex-grow: 1;
-    }
+    display: flex; /* Ensures items are placed in a row */
+    flex-direction: row;  
+    width: 100%; /* Fill the parent horizontally */
+    max-width: 100%;
+    padding: 0 ;
+    margin: 10px;
+    box-sizing: border-box;
 
-    & > p {
-      display: inline;
-      padding: 0 1rem;
-    }
+    align-items: center; /* Vertically centers items */
+    
+    & > #search-icon {
+      flex-grow: 1; /* Allow the search icon to grow and fill the remaining space */
 
-    & svg {
+      background-color: var(--lightgray);
+      border-radius: 4px;
+      height: 2rem;
+      display: flex;
+      align-items: center;
       cursor: pointer;
-      width: 18px;
-      min-width: 18px;
-      margin: 0 0.5rem;
+      white-space: nowrap;
 
-      .search-path {
-        stroke: var(--darkgray);
-        stroke-width: 2px;
-        transition: stroke 0.5s ease;
+      & > div {
+        flex-grow: 1;
+      }
+
+      & > p {
+        display: inline;
+        padding: 0 1rem;
+      }
+
+      & svg {
+        cursor: pointer;
+        width: 18px;
+        min-width: 18px;
+        margin: 0 0.5rem;
+
+        .search-path {
+          stroke: var(--darkgray);
+          stroke-width: 2px;
+          transition: stroke 0.5s ease;
+        }
       }
     }
   }

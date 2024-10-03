@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "sass:watch": "sass --watch sass:css"
+    }, 
+    "type": "module"
+
+}

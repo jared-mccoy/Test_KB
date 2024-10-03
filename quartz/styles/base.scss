@@ -1,3 +1,4 @@
+
 @use "./variables.scss" as *;
 @use "./syntax.scss";
 @use "./callouts.scss";
@@ -20,11 +21,10 @@ section {
 }
 
 .text-highlight {
-  background-color: #fff23688;
+  background-color: var(--textHighlight);
   padding: 0 0.1rem;
   border-radius: 5px;
 }
-
 ::selection {
   background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
   color: var(--darkgray);
@@ -43,8 +43,20 @@ ul,
 .math {
   color: var(--darkgray);
   fill: var(--darkgray);
-  overflow-wrap: anywhere;
   hyphens: auto;
+}
+
+p,
+ul,
+text,
+a,
+li,
+ol,
+ul,
+.katex,
+.math {
+  overflow-wrap: anywhere;
+  /* tr and td removed from list of selectors for overflow-wrap, allowing them to use default 'normal' property value */
 }
 
 .math {
@@ -149,8 +161,8 @@ a {
     @media all and (max-width: $fullPageWidth) {
       flex-direction: column;
     }
-  
-    & .sidebar {
+
+/*     & .sidebar {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -161,13 +173,6 @@ a {
       box-sizing: border-box;
       padding: 0 4rem;
       position: fixed;
-      overflow-y: auto; /* Enable vertical scrolling */
-      max-height: calc(100vh - $topSpacing); /* Ensure the sidebar fits within the viewport considering top margin */
-      &::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Opera */
-      }
-      scrollbar-width: none; /* For Firefox */
-      -ms-overflow-style: none; /* For Internet Explorer and Edge */
       @media all and (max-width: $fullPageWidth) {
         position: initial;
         flex-direction: row;
@@ -176,43 +181,40 @@ a {
         margin-top: 2rem;
       }
     }
-  
+
     & .sidebar.left {
-      left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth); // Adjust by adding 5vw to move closer to the center
+      left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
       @media all and (max-width: $fullPageWidth) {
         gap: 0;
         align-items: center;
       }
     }
-  
+
     & .sidebar.right {
       right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
-      flex-direction: column !important; /* Ensure column layout */
-      flex-wrap: nowrap !important; /* Prevent wrapping */
+      flex-wrap: wrap;
       & > * {
-        flex: initial !important;
-        min-width: initial !important;
-      }
-      @media all and (max-width: $fullPageWidth) {
-        flex-direction: column;
-        flex-wrap: nowrap;
-        & > * {
-          flex: initial;
-          min-width: initial;
+        @media all and (max-width: $fullPageWidth) {
+          flex: 1;
+          min-width: 140px;
         }
       }
-    }
+    } */
   }
-  
-  
-  
-  
 
-  & .page-header {
+  & .page-header,
+  & .page-footer {
     width: $pageWidth;
-    margin: $topSpacing auto 0 auto;
+    margin-top: 1rem;
+
     @media all and (max-width: $fullPageWidth) {
       width: initial;
+    }
+  }
+
+  & .page-header {
+    margin: $topSpacing auto 0 auto;
+    @media all and (max-width: $fullPageWidth) {
       margin-top: 2rem;
     }
   }
@@ -499,6 +501,10 @@ video {
   flex: 1 1 auto;
 }
 
+div:has(> .overflow) {
+  position: relative;
+}
+
 ul.overflow,
 ol.overflow {
   max-height: 400;
@@ -536,3 +542,12 @@ ol.overflow {
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+.external-embed.youtube,
+iframe.pdf {
+  aspect-ratio: 16 / 9;
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+}
+

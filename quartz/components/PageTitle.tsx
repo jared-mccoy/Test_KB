@@ -2,6 +2,7 @@ import { pathToRoot } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
+import style from "./styles/pageTitle.scss"
 
 const PageTitle: QuartzComponent = ({ fileData, cfg, displayClass }: QuartzComponentProps) => {
   const title = cfg?.pageTitle ?? i18n(cfg.locale).propertyDefaults.title
@@ -13,10 +14,11 @@ const PageTitle: QuartzComponent = ({ fileData, cfg, displayClass }: QuartzCompo
   )
 }
 
-PageTitle.css = `
+/* PageTitle.css = `
 .page-title {
-  margin: .2rem 0 0 0;
+  margin: 0 10px;
 }
-`
+` */
+//PageTitle.css = style;
 
 export default (() => PageTitle) satisfies QuartzComponentConstructor

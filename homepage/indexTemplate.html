@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+
+    <!-- Merge dynamic head elements -->
+  <!-- Merge dynamic head elements from the rendered DOM -->
+  <!-- Iterate over the head elements directly from the parsed DOM -->
+  {{#each renderedPage.head.children}}
+    {{{this.outerHTML}}}
+  {{/each}}
+
+
+    <meta charset="{{content.meta.charset}}" />
+    <meta http-equiv="{{content.meta.httpEquiv}}" content="IE=edge" />
+    <title>{{content.meta.title}}</title>
+    <meta name="viewport" content="{{content.meta.viewport}}" />
+    <meta name="description" content="{{content.meta.description}}" />
+    <meta name="keywords" content="{{content.meta.keywords}}" />
+    <meta name="author" content="{{content.meta.author}}" />
+
+    <!-- Facebook and Twitter integration -->
+    <meta property="og:title" content="{{content.meta.og.title}}" />
+    <meta property="og:image" content="{{content.meta.og.image}}" />
+    <meta property="og:url" content="{{content.meta.og.url}}" />
+    <meta property="og:site_name" content="{{content.meta.og.siteName}}" />
+    <meta property="og:description" content="{{content.meta.og.description}}" />
+    <meta name="twitter:title" content="{{content.meta.twitter.title}}" />
+    <meta name="twitter:image" content="{{content.meta.twitter.image}}" />
+    <meta name="twitter:url" content="{{content.meta.twitter.url}}" />
+    <meta name="twitter:card" content="{{content.meta.twitter.card}}" />
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="shortcut icon" href="{{content.links.favicon}}" />
+    <link href="{{content.links.googleFont}}" rel="stylesheet" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="{{content.links.animateCSS}}" />
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="{{content.links.icomoonCSS}}" />
+    <!-- Simple Line Icons -->
+    <link rel="stylesheet" href="{{content.links.lineIconsCSS}}" />
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="{{content.links.bootstrapCSS}}" />
+    <!-- Style -->
+    <link rel="stylesheet" href="{{content.links.styleCSS}}" />
+
+    <!-- Modernizr JS -->
+    <script src="{{content.scripts.modernizr}}"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <!-- Dynamically add body attributes -->  
+  <body {{concatAttributes renderedPage.document.body.attributes}}>
+
+  <!-- Insert Graph if available -->
+  {{getElementFromPage "#global-graph-outer"}}
+
+  <!-- Insert Search if available -->
+  {{getElementFromPage ".search"}}
+
+    <header role="banner" id="fh5co-header">
+      <div class="fluid-container">
+        <nav class="navbar navbar-default navbar-fixed-top js-fullheight">
+          <div id="navbar" class="navbar-collapse js-fullheight">
+            <ul class="nav navbar-nav navbar-left">
+              <li class="active"><a href="#" data-nav-section="home"><span>{{content.header.home}}</span></a></li>
+              <li><a href="#" data-nav-section="services"><span>{{content.header.services}}</span></a></li>
+              <li><a href="#" data-nav-section="explore"><span>{{content.header.project}}</span></a></li>
+              <li><a href="#" data-nav-section="pricing"><span>{{content.header.pricing}}</span></a></li>
+              <li><a href="#" data-nav-section="team"><span>{{content.header.team}}</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <section id="{{content.sections.home.id}}" style="background-image: url({{content.sections.home.image}});" data-stellar-background-ratio="0.5">
+      <div class="gradient"></div>
+      <div class="container">
+        <div class="text-wrap">
+          <div class="text-inner">
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2 text-center">
+                <h1 class="to-animate">{{content.sections.home.title}}</h1>
+                <h2 class="to-animate">{{{content.sections.home.description}}}</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="fh5co-services" data-section="services">
+      <div class="fh5co-services">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 section-heading text-center">
+              <h2 class="to-animate"><em>{{content.sections.services.title}}</em></h2>
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2 subtext">
+                  <h3 class="to-animate">{{content.sections.services.description}}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="core-features">
+              <div class="grid2 to-animate" style="background-image: url({{{content.sections.services.gridImages.[0]}}});"></div>
+              <div class="grid2">
+                <div class="core-f">
+                  <div class="row">
+                    <div class="col-md-12">
+                      {{#each content.sections.services.services}}
+                      <div class="core">
+                        <i class="{{this.icon}} to-animate-2"></i>
+                        <div class="fh5co-post to-animate">
+                          <h3>{{this.title}}</h3>
+                          <p>{{this.description}}</p>
+                        </div>
+                      </div>
+                      {{/each}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="fh5co-counter-section" class="fh5co-counters">
+            <div class="container">
+              <div class="row to-animate">
+                {{#each content.sections.services.counters}}
+                <div class="col-md-3 text-center">
+                  <span class="fh5co-counter js-counter" data-from="0" data-to="{{this.count}}" data-speed="5000" data-refresh-interval="50"></span>
+                  <span class="fh5co-counter-label">{{this.label}}</span>
+                </div>
+                {{/each}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="fh5co-explore" data-section="explore">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 section-heading text-center">
+            <h2 class="to-animate">{{content.sections.explore.title}}</h2>
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2 subtext to-animate">
+                <h3>{{content.sections.explore.description}}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fh5co-project">
+        <div class="container">
+          <div class="row">
+            {{#each content.sections.explore.projects}}
+            <div class="col-md-12 text-center">
+              <div class="project-grid to-animate-2" style="background-image:  url({{this.image}});">
+                <div class="desc">
+                  <h3><a href="#">{{this.title}}</a></h3>
+                  <span>{{this.caption}}</span>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        </div>  
+      </div>
+    </section>
+
+<!--     <section id="fh5co-pricing" data-section="pricing">
+      <div class="fh5co-pricing">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 section-heading text-center">
+              <h2 class="to-animate">{{content.sections.pricing.title}}</h2>
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2 subtext">
+                  <h3 class="to-animate">{{content.sections.pricing.description}}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {{#each content.sections.pricing.plans}}
+            <div class="col-md-3 col-sm-6">
+              <div class="price-box to-animate">
+                <h2 class="pricing-plan">{{this.name}}</h2>
+                <sup class="currency">\$</sup>{{this.price}}<small>/mo</small>
+                <p>{{this.description}}</p>
+                <hr />
+                <ul class="pricing-info">
+                  {{#each this.features}}
+                  <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+                <p><a href="#" class="btn btn-primary">Read More</a></p>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row">
+            <div class="col-md-6 col-md-offset-3 to-animate">
+              <p>{{content.sections.pricing.notes}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+     
+
+    <section id="fh5co-team" data-section="team">
+      <div class="fh5co-team">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 section-heading text-center">
+              <h2 class="to-animate">{{content.sections.team.title}}</h2>
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2 subtext">
+                  <h3 class="to-animate">{{content.sections.team.description}}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {{#each content.sections.team.members}}
+            <div class="col-md-4">
+              <div class="team-box text-center to-animate-2">
+                <div class="user">
+                  <img class="img-responsive" src="{{this.image}}" alt="{{this.name}}">
+                </div>
+                <h3>{{this.name}}</h3>
+                <span class="position">{{this.position}}</span>
+                <p>{{this.description}}</p>
+                <ul class="social-media">
+                  {{#each this.social}}
+                  <li><a href="{{this.link}}"><i class="{{this.icon}}"></i></a></li>
+                  {{/each}}
+                </ul>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    
+
+    <div class="getting-started getting-started-1">
+      <div class="getting-grid" style="background-image: url({{content.sections.gettingStarted.image}});">
+        <div class="desc text-center">
+          <h2>{{content.sections.gettingStarted.title}}</h2>
+          <p>{{content.sections.gettingStarted.description}}</p>
+          <p><a href="#" class="btn btn-primary">{{content.sections.gettingStarted.cta}}</a></p>
+        </div>
+      </div>
+    </div> -->
+    
+    <div id="fh5co-footer" role="contentinfo">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 to-animate">
+            <h3 class="section-title">{{content.footer.about.title}}</h3>
+            <p>{{content.footer.about.description}}</p>
+            <p class="copy-right">{{content.footer.copyright}}</p>
+          </div>
+          <div class="col-md-4 to-animate">
+            <h3 class="section-title">{{content.footer.address.title}}</h3>
+            <ul class="contact-info">
+              {{#each content.footer.address.details}}
+                <li><i class="{{this.icon}}"></i>{{{this.text}}}</li>
+              {{/each}}
+            </ul>
+            <h3 class="section-title">{{content.footer.socialTitle}}</h3>
+            <ul class="social-media">
+              {{#each content.footer.social}}
+                <li><a href="{{this.link}}"><i class="{{this.icon}}"></i></a></li>
+              {{/each}}
+            </ul>
+          </div>
+          
+          <div class="col-md-4 to-animate">
+            <h3 class="section-title">{{content.footer.contactFormTitle}}</h3>
+            <form class="contact-form">
+              <div class="form-group">
+                <label for="name" class="sr-only">Name</label>
+                <input type="name" class="form-control" id="name" placeholder="Name" />
+              </div>
+              <div class="form-group">
+                <label for="email" class="sr-only">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Email" />
+              </div>
+              <div class="form-group">
+                <label for="message" class="sr-only">Message</label>
+                <textarea class="form-control" id="message" rows="7" placeholder="Message"></textarea>
+              </div>
+              <div class="form-group">
+                <input type="submit" id="btn-submit" class="btn btn-send-message btn-md" value="Send Message" />
+              </div>
+            </form>
+          </div>
+        </div>
+    
+        <!-- Email Form -->
+      </div>
+    </div>
+    
+    
+    
+
+    <script src="{{content.scripts.jquery}}"></script>
+    <script src="{{content.scripts.jqueryEasing}}"></script>
+    <script src="{{content.scripts.bootstrapJS}}"></script>
+    <script src="{{content.scripts.waypoints}}"></script>
+    <script src="{{content.scripts.stellar}}"></script>
+    <script src="{{content.scripts.countTo}}"></script>
+    <script src="{{content.scripts.mainJS}}"></script>
+
+  </body>
+</html>

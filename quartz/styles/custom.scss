@@ -1,3 +1,233 @@
-@use "./base.scss";
+// OK 2 column SASS
 
-// put your custom CSS here!
+@use "./base.scss";
+@use "./variables.scss" as *;
+@use "../components/styles/popover.scss";  // Import popover styles
+
+// Custom styles for overriding popover
+.popover-inner {
+  padding: 1rem !important; 
+  width: fit-content !important; 
+  max-width: 30rem !important; 
+  margin: 0 !important;
+}
+
+.page article p > strong {
+  color: var(--darkgray);
+}
+
+
+.page-title {
+  margin: 10px;
+  
+}
+
+.callout {
+  img {
+    margin: 0;  
+  }
+}
+
+.transclude-src {
+  text-decoration: none !important;  
+}
+
+
+sup {
+  vertical-align: top; /* Keeps the superscript positioned properly */
+  font-size: 0.65em; /* Adjust the size if needed */
+  line-height: 0; /* Prevents the superscript from increasing the line height */
+}
+
+
+/* won't work because the component doesn't seem to recognize scss
+.article-title h1 {
+  font-weight: 400 !important;
+} */
+
+// Other custom styles
+a {
+  font-weight: normal;
+  color: var(--darkgray);
+}
+
+a.internal {
+  text-decoration: underline;
+  text-decoration-color: var(--secondary);
+  text-decoration-thickness: .01px;
+  text-underline-offset: 2px;
+}
+
+.graph {
+  & > h3 {
+    font-size: 1rem;
+    margin: .75rem 0 0 0;
+  }
+}
+
+.search>#search-container>#search-space>#search-layout>#preview-container {
+  padding: 1rem;
+}
+
+@media all and (min-width: 600px) {
+  .page { 
+
+    @media all and (max-width: $fullPageWidth) {
+      max-width: $pageWidth;
+    }
+    @media all and (min-width: $mediumPageWidth) {
+      //margin-left: calc(calc(100vw - $mediumPageWidth) / 2 + $sidePanelWidth);
+      margin-left: calc(50vw - 200px);
+      width: fit-content;
+    }
+    @media all and (max-width: $mediumPageWidth) {
+      margin: 0 auto;
+      padding: 0 1rem;
+
+    }
+
+    & .sidebar {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0rem;
+      top: 0;
+      width: $sidePanelWidth;
+      margin-top: $topSpacing;
+      box-sizing: border-box;
+      padding: 0 3rem;
+      position: fixed;
+      @media all and (max-width: $fullPageWidth) {
+        position: initial;
+        flex-direction: row;
+        padding: 0;
+        width: initial;
+        margin-top: 2rem;
+      }
+    }
+
+    & .sidebar.left {
+      //left: calc(calc(100vw - $fullPageWidth) / 2);
+      left: calc(50vw - 600px);
+
+      @media all and (max-width: $fullPageWidth) and (min-width: $mediumPageWidth) {
+        left: calc(calc(100vw - $mediumPageWidth) / 2);
+      }
+
+      @media all and (max-width: $mediumPageWidth) {
+        gap: 0;
+        align-items: center;
+        position: initial;
+        flex-direction: row;
+        padding: 0;
+        width: initial;
+        margin-top: 2rem;
+        left: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        @media all and (max-width: $fullPageWidth) {
+          gap: 0;
+          align-items: center;
+        }
+      }
+    }
+
+    & .sidebar.right {
+        right: calc(calc(100vw - $pageWidth) / 2 - $sidePanelWidth);
+        @media all and (max-width: $fullPageWidth) {
+          position: initial;
+          flex-direction: row;
+          padding: 0;
+          width: initial;
+          margin-top: 2rem;
+        }
+        & > * {
+          @media all and (max-width: $fullPageWidth) {
+            flex: 1;
+          margin-left: auto;
+          margin-right: auto;
+          width: $pageWidth;
+          }
+        }
+          margin-left: auto;
+          margin-right: auto;
+          width: $pageWidth;
+      }
+
+      @media all and (max-width: $fullPageWidth) {
+        width: initial;
+        //margin-left: 0;
+      }
+    
+  }
+
+}
+
+
+/* // Custom styles
+.text-highlight {
+  background-color: #fff23688;
+  padding: 0 0.1rem;
+  border-radius: 5px;
+}
+ */
+// Override anchor styles
+
+
+/*
+.page {
+  @media all and (max-width: $fullPageWidth) {
+    margin: 0 auto;
+    padding: 0 1rem;
+    max-width: $pageWidth;
+  }
+
+  & > #quartz-body {
+  
+    & .sidebar {
+
+      overflow-y: auto; //Enable vertical scrolling
+      max-height: calc(100vh - $topSpacing); //Ensure the sidebar fits within the viewport considering top margin
+      &::-webkit-scrollbar {
+        display: none; //For Chrome, Safari, and Opera
+      }
+      scrollbar-width: none; //For Firefox
+      -ms-overflow-style: none; //For Internet Explorer and Edge
+
+    }   
+  
+    & .sidebar.right {
+      flex-direction: column !important; // Ensure column layout 
+      flex-wrap: nowrap !important; // Prevent wrapping
+      & > * {
+        flex: initial !important;
+        min-width: initial !important;
+      }
+      @media all and (max-width: $fullPageWidth) {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        & > * {
+          flex: initial;
+          min-width: initial;
+        }
+      }
+    }
+  }
+  
+  & .page-header {
+    margin: $topSpacing auto 0 auto;
+    @media all and (max-width: $fullPageWidth) {
+      margin-top: 2rem;
+    }
+  }
+
+  & .center,
+  & footer {
+    margin-left: auto;
+    margin-right: auto;
+    width: $pageWidth;
+    @media all and (max-width: $fullPageWidth) {
+      width: initial;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+} */                      

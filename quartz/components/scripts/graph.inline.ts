@@ -1,3 +1,5 @@
+// graph inline 
+
 import type { ContentDetails, ContentIndex } from "../../plugins/emitters/contentIndex"
 import * as d3 from "d3"
 import { registerEscapeHandler, removeAllChildren } from "./util"
@@ -25,12 +27,15 @@ function addToVisited(slug: SimpleSlug) {
   localStorage.setItem(localStorageKey, JSON.stringify([...visited]))
 }
 
-async function renderGraph(container: string, fullSlug: FullSlug) {
+async function renderGraph(container: string, fullSlug: FullSlug, userCfg = {}) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
   const graph = document.getElementById(container)
   if (!graph) return
   removeAllChildren(graph)
+
+  const datasetCfg = graph.dataset["cfg"] ? JSON.parse(graph.dataset["cfg"]!) : {};
+  const config = { ...datasetCfg, ...userCfg };
 
   let {
     drag: enableDrag,
@@ -45,7 +50,19 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     removeTags,
     showTags,
     focusOnHover,
-  } = JSON.parse(graph.dataset["cfg"]!)
+    parentDims
+  } = config;
+
+  let containerHeight, containerWidth;
+
+  if (parentDims && container === "graph-container") {
+    // get parent element of graph height
+    const parent = graph.parentElement;
+    if (parent) {
+      containerHeight = parent.offsetHeight;
+      containerWidth = parent.offsetWidth;
+    }
+  }
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
     Object.entries<ContentDetails>(await fetchData).map(([k, v]) => [
@@ -124,8 +141,8 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     )
     .force("center", d3.forceCenter().strength(centerForce))
 
-  const height = Math.max(graph.offsetHeight, 250)
-  const width = graph.offsetWidth
+  const height = Math.max(graph.offsetHeight, 250, containerHeight || 0)
+  const width = Math.max(graph.offsetWidth, containerWidth || 0) 
 
   const svg = d3
     .select<HTMLElement, NodeData>("#" + container)
@@ -360,11 +377,64 @@ function renderGlobalGraph() {
 }
 
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const slug = e.detail.url
-  addToVisited(slug)
-  await renderGraph("graph-container", slug)
+  const slug = e.detail.url;
+  addToVisited(slug);
 
-  const containerIcon = document.getElementById("global-graph-icon")
-  containerIcon?.addEventListener("click", renderGlobalGraph)
-  window.addCleanup(() => containerIcon?.removeEventListener("click", renderGlobalGraph))
-})
+  if (slug === 'index' || slug === '/') {
+    // Render the global graph directly in the regular graph container
+    await renderGraph("graph-container", slug, {depth: -1, parentDims: true}); // Pass 'true' to indicate global graph
+    
+    // Hide sibling element glabal-graph-icon
+    const globalGraphIcon = document.getElementById("global-graph-icon");
+    globalGraphIcon?.classList.add("hidden");
+
+  } else {
+    // Render the local graph as usual
+    await renderGraph("graph-container", slug);
+  }
+
+  // Attach event listener for expanding the global graph (if needed)
+  const containerIcon = document.getElementById("global-graph-icon");
+  containerIcon?.addEventListener("click", renderGlobalGraph);
+  window.addCleanup(() => containerIcon?.removeEventListener("click", renderGlobalGraph));
+});
+
+
+
+function moveGraphElement() {
+  const graphElement = document.querySelector('.graph');
+  const leftSidebar = document.querySelector('.sidebar.left');
+  const rightSidebar = document.querySelector('.sidebar.right');
+
+  if (!graphElement || !leftSidebar || !rightSidebar) return;
+
+  const leftSidebarPosition = window.getComputedStyle(leftSidebar).position;
+
+  if (leftSidebarPosition === 'fixed') {
+    if (!leftSidebar.contains(graphElement)) {
+      leftSidebar.appendChild(graphElement); // Position in left sidebar
+      //leftSidebar.insertBefore(graphElement, leftSidebar.lastChild); // Always position before last child
+    }
+  } else {
+    if (!rightSidebar.contains(graphElement)) {      
+      rightSidebar.insertBefore(graphElement, rightSidebar.lastChild); // Position in right sidebar
+    }
+  }
+}
+
+// Trigger on load and window resize events
+window.addEventListener('load', moveGraphElement);
+window.addEventListener('resize', moveGraphElement);
+document.addEventListener("nav", moveGraphElement);
+
+//
+window.addEventListener('resize', () => {
+  const graphContainer = document.querySelector("#graph-container");
+  const slug = getFullSlug(window)
+
+  if (graphContainer) {
+    renderGraph("graph-container", slug);
+  }
+});
+
+

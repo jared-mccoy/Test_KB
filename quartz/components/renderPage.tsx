@@ -21,11 +21,18 @@ interface RenderComponents {
 
 const headerRegex = new RegExp(/h[1-6]/)
 export function pageResources(
-  baseDir: FullSlug | RelativeURL,
+  baseDir: FullSlug | RelativeURL,  
   staticResources: StaticResources,
 ): StaticResources {
+
+/* 
+  // NEW Update baseDir in place if it's the index (for HOMEPAGE )
+  if (baseDir === "index") {
+    baseDir = "" as FullSlug
+  } */
+
   const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
-  const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
+  const contentIndexScript =  `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
   return {
     css: [joinSegments(baseDir, "index.css"), ...staticResources.css],
@@ -51,6 +58,7 @@ export function pageResources(
     ],
   }
 }
+
 
 export function renderPage(
   cfg: GlobalConfiguration,
@@ -140,7 +148,9 @@ export function renderPage(
               tagName: "a",
               properties: { href: inner.properties?.href, class: ["internal", "transclude-src"] },
               children: [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+                //{ type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+                { type: "text", value: "🔗" }, // This is a simple Unicode link icon
+
               ],
             },
           ]
