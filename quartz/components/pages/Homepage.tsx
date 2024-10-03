@@ -3,6 +3,7 @@ import { Search, Graph } from "../"
 import { defaultOptions as graphOptions} from "../Graph"
 import { extractFilename } from "../scripts/util"
 
+
 export const content: Record<string, any> = {
   meta: {
       charset: "utf-8",

@@ -111,7 +111,7 @@ export default ((opts?: any) => {
   };    
 
   Navigator.css = style;
-  Navigator.beforeDOMLoaded = script;
+  Navigator.afterDOMLoaded = script;
 
   return Navigator;
 }) satisfies QuartzComponentConstructor;
