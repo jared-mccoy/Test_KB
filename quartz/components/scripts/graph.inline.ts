@@ -382,7 +382,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   if (slug === 'index' || slug === '/') {
     // Render the global graph directly in the regular graph container
-    await renderGraph("graph-container", slug, {depth: -1, parentDims: true}); // Pass 'true' to indicate global graph
+    await renderGraph("graph-container", slug, {scale: .5, depth: -1, parentDims: true}); // Pass 'true' to indicate global graph
     
     // Hide sibling element glabal-graph-icon
     const globalGraphIcon = document.getElementById("global-graph-icon");
