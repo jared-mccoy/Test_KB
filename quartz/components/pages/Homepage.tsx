@@ -30,21 +30,21 @@ export const content: Record<string, any> = {
   links: {
     favicon: "favicon.ico",
     googleFont: "https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700&display=swap",
-    animateCSS: "homepage/css/animate.css",
-    icomoonCSS: "homepage/css/icomoon.css",
-    lineIconsCSS: "homepage/css/simple-line-icons.css",
-    bootstrapCSS: "homepage/css/bootstrap.css",
-    styleCSS: "homepage/css/style.css",
+    animateCSS: "Test_KB/homepage/css/animate.css",
+    icomoonCSS: "Test_KB/homepage/css/icomoon.css",
+    lineIconsCSS: "Test_KB/homepage/css/simple-line-icons.css",
+    bootstrapCSS: "Test_KB/homepage/css/bootstrap.css",
+    styleCSS: "Test_KB/homepage/css/style.css",
   },
   scripts: {
-  /*   modernizr: "homepage/js/modernizr-2.6.2.min.js", */
-    jquery: "homepage/js/jquery.min.js",
-    jqueryEasing: "homepage/js/jquery.easing.1.3.js",
-    bootstrapJS: "homepage/js/bootstrap.min.js",
-    waypoints: "homepage/js/jquery.waypoints.min.js",
-    stellar: "homepage/js/jquery.stellar.min.js",
-    countTo: "homepage/js/jquery.countTo.js",
-    mainJS: "homepage/js/main.js",
+  /*   modernizr: "Test_KB/homepage/js/modernizr-2.6.2.min.js", */
+    jquery: "Test_KB/homepage/js/jquery.min.js",
+    jqueryEasing: "Test_KB/homepage/js/jquery.easing.1.3.js",
+    bootstrapJS: "Test_KB/homepage/js/bootstrap.min.js",
+    waypoints: "Test_KB/homepage/js/jquery.waypoints.min.js",
+    stellar: "Test_KB/homepage/js/jquery.stellar.min.js",
+    countTo: "Test_KB/homepage/js/jquery.countTo.js",
+    mainJS: "Test_KB/homepage/js/main.js",
   },
   header: {
     home: "Home",
@@ -56,7 +56,7 @@ export const content: Record<string, any> = {
   sections: {
     home: {
       id: "fh5co-home",
-      image: "homepage/images/Surface_Scholar_Text_Desktop.png",
+      image: "Test_KB/homepage/images/Surface_Scholar_Text_Desktop.png",
       background: "aesthetics / aesthesis / beauty / ugliness / algorithms / automation / searching / modeling / alienation / exclusion / exile / segregation / allegory / parable / ambiguity / uncertainty / undecidability / unreadability / aporia / apostrophe / archives / libraries / museums / databases / Adorno, Theodor W. / Benjamin, Walter / argument / disagreement / dissensus / debate / artificial intelligence / machine learning / neural nets / bibliography / birth / conception / fertility / pregnancy / bodies / embodiment / corporeality / boredom / attention / boundaries / limits / portals / horizons / business / management / corporation / causality / teleology / cinema / metacinema / citationality / intertextuality / allusion / class / wealth / poverty / codes / encryption / decryption / colonialism / empire / conditionality / subjunction / confinement / capture / escape / flight / constellations / dialectical images / contingency / accident / chance / occasion / contradiction / juxtaposition / paradox / corruption / evil / sin / cosmology / astronomy / solarity / cultivation / vulgarity / taste / cutting / incision / excision / cultural studies / dance / de Man, Paul / death / mortality / mourning / deception / manipulation / lying / fraud / deconstruction / definition / denomination / Derrida, Jacques / dialectics / digitization / interfaces / workflows / collaboration / digital humanities / discourse / conversation / dialogue / dialogism / doubles / surrogates / avatars / ecstasy / vision / revelation / epiphany / entrances / arrivals / entropy / chaos / order / patterns / erasure / effacement / deletion / ethics / morality / judgment / duty / events / happenings / encounters / evolution / Darwin, Charles / examples / exemplification / existence / ontology / metaphysics / exits / departures / eyes / faith / spirituality / religion / theology / family / parents / children / genealogy / fiction / metafiction / focalization / stream of consciousness / free indirect discourse / folds / layers / force / power / strength / fragmentation / incompleteness / freedom / autonomy / selfhood / intention / will / Freud / psychoanalysis / friendship / camaraderie / philia / furnishings / furniture / gender / masculinity / femininity / genre / convention / gesture / expression / grammar / parts of speech / graphesis / diagramming / mapping / charting / graves / crypts / monuments / guilt / confession / apology / forgiveness / excuses / Heidegger, Martin / home / hospitality / hostility / humanity / anthropology / ideology / imperatives / commands / information / data / facticity / interpretation / criticism / hermeneutics / irony / iteration / usage / jokes / laughter / humor / law / jurisprudence / crime / punishment / life / biology / genetics / light / darkness / shade / linguistics / structuralism / formalism / links / webs / networks / clouds / systems /cybernetics / liquidity / fluidity / immersion / submersion / floating / drowning / falling / flying / suspension / lists / litanies / literature / literariness / loops / feedback / circuits / spirals / arabesques / loss / lack / absence / emptiness / love / jealousy / pathos / machinery / mechanicity / madness / psychosis / neurosis / Marx / Marxism / materiality / memory / forgetting / mnemotechnics / method / praxis / program / metonymy / mimesis / description / ekphrasis / mind / consciousness / brain / cognition / mise-en-abyme / abground / music / song / money / economy / capitalism / reification / commodity fetishism / movement / transportation / mutation / distortion / deformity / monstrosity / narrative / metanarrative / nationality / nature / ecology / physis / nudity / divestment / originality / authenticity / innovation / otherness / alterity / strangeness / foreignness / exoticism / painting / drawing / palimpsests / parekbasis / metalepsis / anacoluthon / parentheses / pauses / breaks / interruptions / ellipses / perception / phenomenality / periphrasis / apophasis / litotes / personification / prosopopeia / anthropomorphism / poetry / poiēsis / politics / police / authority / control / security / positing / hypostasis / postmodernism / posture / stature / ergonomics / prediction / foreshadowing / projection / prolepsis / prefaces / pride / shame / flattery / egoity / privacy / intimacy / interiority / progress / utopia / property / ownership / authorship / copyright / piracy / publication / dissemination / reception / audience / pun / paronomasia / onomatopoeia / qualification / bracketing / questioning / interrogation / race / ethnicity / reality / realism / repetition / recurrence / return / retrospection / flashback / analepsis / risk / danger / hazard / wager / roads / paths / ways / lines / sailing / seas / ships / navigation / scholarship / pedagogy / university / secrecy / mystery / conspiracy / occultism / paranoia / self-consciousness / self-overhearing / sex / desire / eros / sickness / health / pathology / medicine / signification / reference / semiosis / singularity / social media / space / spatiality / speech / voice / language / streams / feeds / blogs / RSS / summary / synopsis / paraphrase / symbol / synecdoche / totality / syntax / hypotaxis / parataxis / tags / keywords / metadata / technology / prosthesis / theater / metatheater / thematism / autothematism / time / temporality / translation / polyglossia / trope / figure / metaphor / rhetoric / tropological excess / supplementarity / aberration / catachresis / truth / knowledge / certainty / epistemology / typography / graphemes / letters / uncanniness / unconsciousness / versions / drafts / revisions / editions / visibility / specularity / spectacle / espial / surveillance / waiting / anticipating / hoping / waste / garbage / sustainability / conservation / weaving / knitting / knots / wildness / savagery / barbarity / witness / testimony / writing / reading / textuality",
       title: "Surface / Scholar",
       description: null //`Toward a knowledge without depth`,
@@ -66,7 +66,7 @@ export const content: Record<string, any> = {
       description: null,
       title: null, //"Knowledge Without Depth",
       //"Writing is the texture of memory. Technology, its unraveling.",
-      gridImages: ["homepage/images/Obsidian_Screenshot.png"],
+      gridImages: ["Test_KB/homepage/images/Obsidian_Screenshot.png"],
       counters: {
         authors: 0,
         sources: 0,
@@ -117,7 +117,7 @@ export const content: Record<string, any> = {
         {
           name: "Jared McCoy",
           position: "Developer / Designer / Educator",
-          image: "homepage/images/user-1.jpg",
+          image: "Test_KB/homepage/images/user-1.jpg",
           description: "Building knowledge infrastructure, visualizing the intricacy of language.",
           social: [
             { icon: "icon-facebook", link: "#" },
@@ -130,7 +130,7 @@ export const content: Record<string, any> = {
         {
           name: "Kevin Steve",
           position: "Co-Founder, Product Designer",
-          image: "homepage/images/user-2.jpg",
+          image: "Test_KB/homepage/images/user-2.jpg",
           description: "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
           social: [
             { icon: "icon-facebook", link: "#" },
@@ -142,7 +142,7 @@ export const content: Record<string, any> = {
         {
           name: "Ross Standford",
           position: "Full Stack Developer",
-          image: "homepage/images/user-3.jpg",
+          image: "Test_KB/homepage/images/user-3.jpg",
           description: "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
           social: [
             { icon: "icon-facebook", link: "#" },
@@ -158,34 +158,34 @@ export const content: Record<string, any> = {
       description: null,
 /*         projects: [
         {
-          image: "homepage/images/Receptive_Mindset.png",
+          image: "Test_KB/homepage/images/Receptive_Mindset.png",
           title: "Sensuous Certainty",
           caption: "Prototype for a Visual Exploration of Philosophical Complexity",
         },
         {
-          image: "homepage/images/Human_as_biotech.jpg",
+          image: "Test_KB/homepage/images/Human_as_biotech.jpg",
           title: "Human / Nature / Technics",
           caption: "Are we really more natural than the machines that define us?",
         },
         {
-          image: "homepage/images/Scholars-at-Sea-B.webp",
+          image: "Test_KB/homepage/images/Scholars-at-Sea-B.webp",
           title: "Surface / Scholar",
           caption: "Art thou a scholar? Or art thou adrift?",
         },
         {
-          image: "homepage/images/Mirrored_Constellations.webp",
+          image: "Test_KB/homepage/images/Mirrored_Constellations.webp",
           title: "Text Machines",
           caption: "Mnemotechnial Infrastructure as Exappropriation ",
         },
         {
-          image: "homepage/images/Grasping_of_Begreifen.png",
+          image: "Test_KB/homepage/images/Grasping_of_Begreifen.png",
           title: "Knowledge Infrastructure",
           caption: "From personal to collective knowledgebase",
         },
       ], */
     },
     gettingStarted: {
-      image: "homepage/images/full_image_1.jpg",
+      image: "Test_KB/homepage/images/full_image_1.jpg",
       title: "Getting Started",
       description: "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia...",
       cta: "Get in touch"
@@ -311,7 +311,7 @@ export default ((opts?: any) => {
                 </div>
               </nav>
               {/* Wrap SearchComponent in a custom class for homepage-specific styling */}
-              <div className="homepage-search">
+              <div className="Test_KB/homepage-search">
                 <SearchComponent {...props} />
               </div>
             </div>
@@ -320,7 +320,7 @@ export default ((opts?: any) => {
         <section
           id={content.sections.home.id}
           data-stellar-background-ratio="0.5"
-          className="homepage-section"
+          className="Test_KB/homepage-section"
         >
           <div className="gradient"></div>
 
@@ -384,7 +384,7 @@ export default ((opts?: any) => {
                     </div>
                   </div>
                 </div>
-                < div className="homepage-graph">  
+                < div className="Test_KB/homepage-graph">  
                   {/* {<SearchComponent {...props} />} */}
                   {<GraphComponent {...props} />} 
                 </div>
