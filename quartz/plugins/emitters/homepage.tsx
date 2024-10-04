@@ -82,8 +82,8 @@ export const Homepage: QuartzEmitterPlugin<Partial<FullPageLayout>> = () => {
       // Compile SASS to CSS
       await compileSass();
 
-/*       // Copy the homepage directory contents
-      await copyDirectory(homepageSrcDir, homepageDestDir) */
+      // Copy the homepage directory contents
+      await copyDirectory(homepageSrcDir, homepageDestDir)
 
       const slug = "index" as FullSlug;
       const externalResources = pageResources(pathToRoot(slug), resources);
