@@ -28,7 +28,7 @@ export const content: Record<string, any> = {
       },
   },
   links: {
-    favicon: "favicon.ico",
+    /* favicon: "favicon.ico", */
     googleFont: "https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700&display=swap",
     animateCSS: "homepage/css/animate.css",
     icomoonCSS: "homepage/css/icomoon.css",
@@ -194,20 +194,21 @@ export const content: Record<string, any> = {
   footer: {
     about: {
       title: "About Us",
-      description: "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia...",
+      description: "Exploring the intersections of technology and the humanities and the interfaces of writing and memory.",
     },
     address: {
       title: "Our Address",
       "details": [
         //{ "icon": "icon-phone", "text": "+ 1235 2355 98" },
-        { "icon": "icon-envelope", "text": "<a href='#'>info@surfacscholar.com</a>" },
+        { "icon": "icon-envelope", "text": "<a href='#'>contact@surfacscholar.com</a>" },
         { "icon": "icon-globe2", "text": "<a href='#'>www.surfacescholar.com</a>" },
         { "icon": "icon-map-marker", "text": "Long Beach, CA" },
       ]
     },
     socialTitle: "Connect with Us", 
     social: [
-      { icon: "icon-facebook", link: "#" },
+      { icon: "icon-facebook", link: "https://www.facebook.com/surfacescholar/" },
+      { icon: "icon-instagram", link: "#" },
       { icon: "icon-twitter", link: "#" },
       { icon: "icon-dribbble", link: "#" },
       { icon: "icon-github-alt", link: "#" },
@@ -286,7 +287,7 @@ export default ((opts?: any) => {
           <meta name="twitter:image" content={content.meta.twitter.image} />
           <meta name="twitter:url" content={content.meta.twitter.url} />
           <meta name="twitter:card" content={content.meta.twitter.card} />
-          <link rel="shortcut icon" href={content.links.favicon} />
+          {/* <link rel="shortcut icon" href={content.links.favicon} /> */}
           <link href={content.links.googleFont} rel="stylesheet" />
           <link rel="stylesheet" href={content.links.animateCSS} />
           <link rel="stylesheet" href={content.links.icomoonCSS} />
@@ -297,7 +298,7 @@ export default ((opts?: any) => {
         <body data-slug='index'>
           <header role="banner" id="fh5co-header">
             <div className="fluid-container">
-              <nav className="navbar navbar-default navbar-fixed-top js-fullheight">
+              {/* <nav className="navbar navbar-default navbar-fixed-top js-fullheight">
                 <div id="navbar" className="navbar-collapse js-fullheight">
                   <ul className="nav navbar-nav navbar-left">
                     {Object.entries(content.header).map(([key, value], index) => (
@@ -309,7 +310,7 @@ export default ((opts?: any) => {
                     ))}
                   </ul>
                 </div>
-              </nav>
+              </nav> */}
               {/* Wrap SearchComponent in a custom class for homepage-specific styling */}
               <div className="homepage-search">
                 <SearchComponent {...props} />
@@ -554,7 +555,7 @@ export default ((opts?: any) => {
                     ))}
                   </ul>
                 </div>
-                <div className="col-md-4 to-animate">
+                {/*<div className="col-md-4 to-animate">
                   <h3 className="section-title">
                     {content.footer.contactFormTitle}
                   </h3>
@@ -601,7 +602,7 @@ export default ((opts?: any) => {
                       />
                     </div>
                   </form>
-                </div>
+                </div>*/}
               </div>
             </div>
           </footer>

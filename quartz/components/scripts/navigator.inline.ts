@@ -52,14 +52,24 @@ document.addEventListener("nav", () => {
     }
 
     const autoplayCheckbox = document.getElementById('autoplay-checkbox') as HTMLInputElement;
-    const isAutoplayEnabled = localStorage.getItem('autoplay') === 'true';
-
+    let isAutoplayEnabled: boolean;
+    
+    // Get the value from localStorage and convert to boolean
+    const autoplaySetting = localStorage.getItem('autoplay');
+    if (autoplaySetting === null) {
+      isAutoplayEnabled = true; // Default to true
+      localStorage.setItem('autoplay', 'true');
+    } else {
+      isAutoplayEnabled = autoplaySetting === 'true';
+    }
+    
     if (autoplayCheckbox) {
-      autoplayCheckbox.checked = isAutoplayEnabled;
+      autoplayCheckbox.checked = isAutoplayEnabled; // Now explicitly a boolean
       autoplayCheckbox.addEventListener('change', () => {
         localStorage.setItem('autoplay', autoplayCheckbox.checked ? 'true' : 'false');
       });
     }
+    
 
     const seqGroupSelect = navigatorContainer.querySelector('.seqgroup-selector') as HTMLSelectElement;
     if (seqGroupSelect) {
@@ -294,7 +304,10 @@ function onPlayerStateChange(
 
     // Show the menu and start the countdown
     showMenu(currentSlug, selectedGroup, allFiles);
-    startCountdown(currentSlug, selectedGroup, allFiles);
+
+    if (localStorage.getItem('autoplay') === 'true') {
+      startCountdown(currentSlug, selectedGroup, allFiles);
+    }
   }
 }
 

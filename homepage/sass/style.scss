@@ -359,7 +359,7 @@ width: 180px; /* Customize the width */
 	.navbar {
 		padding-bottom: 0;
 		margin-bottom: 0;
-		display: table;
+		display: none !important //table;		
 	}
 	#navbar {
 		display: table-cell;

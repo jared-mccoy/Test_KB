@@ -94,8 +94,8 @@ export default ((opts?: any) => {
         <h3>Navigation</h3>           
         <div class="autoplay-toggle">
           <label>
-            <input type="checkbox" name="autoplay" id="autoplay-checkbox" />
-            Autoplay
+          <input type="checkbox" name="autoplay" id="autoplay-checkbox" checked />
+          Autoplay
           </label>
         </div>
         <select class="seqgroup-selector" name="seqGroup">
