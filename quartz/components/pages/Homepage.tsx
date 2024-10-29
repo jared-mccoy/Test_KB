@@ -28,7 +28,7 @@ export const content: Record<string, any> = {
       },
   },
   links: {
-    /* favicon: "favicon.ico", */
+    icon: "homepage/images/icon.png",
     googleFont: "https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700&display=swap",
     animateCSS: "homepage/css/animate.css",
     icomoonCSS: "homepage/css/icomoon.css",
@@ -208,13 +208,15 @@ export const content: Record<string, any> = {
     socialTitle: "Connect with Us", 
     social: [
       { icon: "icon-facebook", link: "https://www.facebook.com/surfacescholar/" },
-      { icon: "icon-instagram", link: "#" },
-      { icon: "icon-twitter", link: "#" },
-      { icon: "icon-dribbble", link: "#" },
-      { icon: "icon-github-alt", link: "#" },
+      { icon: "icon-instagram", link: "https://www.instagram.com/surface.scholar/" },
+      { icon: "icon-twitter", link: "https://x.com/SurfaceScholar" },
+      { icon: "icon-youtube", link: "https://www.youtube.com/@surfacescholar8355" },
+      { icon: "icon-linkedin", link: "https://www.linkedin.com/in/surfacescholar/" },
+
+      /* { icon: "icon-github-alt", link: "#" } */,
     ],
     contactFormTitle: "Drop us a line",  
-    copyright: "&copy; 2015 Twist Free Template. All Rights Reserved. Designed by FREEHTML5.co",
+    copyright: "&copy; 2024",
   },
 } 
 
@@ -262,17 +264,6 @@ export default ((opts?: any) => {
         <head>
           <meta charSet={content.meta.charset} />
           <meta httpEquiv={content.meta.httpEquiv} content="IE=edge" />
-          <meta
-          httpEquiv="Content-Security-Policy"
-          content="
-            default-src 'self';
-            script-src 'self' https://jared-mccoy.github.io https://cdnjs.cloudflare.com https://plausible.io;
-            style-src 'self' https://fonts.googleapis.com https://jared-mccoy.github.io https://cdnjs.cloudflare.com;
-            img-src 'self' https://jared-mccoy.github.io;
-            connect-src 'self' https://plausible.io;
-            font-src 'self' https://fonts.gstatic.com;
-          "
-        />
           <title>{content.meta.title}</title>
           <meta name="viewport" content={content.meta.viewport} />
           <meta name="description" content={content.meta.description} />
@@ -287,7 +278,7 @@ export default ((opts?: any) => {
           <meta name="twitter:image" content={content.meta.twitter.image} />
           <meta name="twitter:url" content={content.meta.twitter.url} />
           <meta name="twitter:card" content={content.meta.twitter.card} />
-          {/* <link rel="shortcut icon" href={content.links.favicon} /> */}
+          <link rel="icon" href={content.links.icon} />
           <link href={content.links.googleFont} rel="stylesheet" />
           <link rel="stylesheet" href={content.links.animateCSS} />
           <link rel="stylesheet" href={content.links.icomoonCSS} />
