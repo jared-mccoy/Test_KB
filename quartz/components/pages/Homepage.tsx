@@ -200,8 +200,12 @@ export const content: Record<string, any> = {
       title: "Our Address",
       "details": [
         //{ "icon": "icon-phone", "text": "+ 1235 2355 98" },
-        { "icon": "icon-envelope", "text": "<a href='#'>contact@surfacscholar.com</a>" },
-        { "icon": "icon-globe2", "text": "<a href='#'>www.surfacescholar.com</a>" },
+        { 
+          icon: "icon-envelope", 
+          text: "contact@surfacescholar.com",
+          type: "email"  // Add this to identify email entries
+        },
+        { "icon": "icon-globe2", "text": "<a href='#'>surfacescholar.com</a>" },
         { "icon": "icon-map-marker", "text": "Long Beach, CA" },
       ]
     },
@@ -237,15 +241,28 @@ export default ((opts?: any) => {
     const featuredPages = (allFiles)
       .filter(file => file?.frontmatter?.feature)
       .map(file => {
-        const { feature_title, title, feature_sub, title_sub, feature_media} = file.frontmatter;
+        const { feature_title, title, feature_sub, title_sub, feature_media, feature_index } = file.frontmatter;
         const mediaPath = feature_media ? `'./[Resources]/${extractFilename(feature_media)}'` : "";
     
         return {
           image: mediaPath,
           slug: file.slug || "",
           title: feature_title || title || "",
-          caption: feature_sub || title_sub || ""
+          caption: feature_sub || title_sub || "",
+          feature_index: feature_index || null  // Capture the index value
         };
+      })
+      .sort((a, b) => {
+        // If both have valid indices, compare them
+        if (a.feature_index !== null && b.feature_index !== null) {
+          return a.feature_index - b.feature_index;
+        }
+        // If only a has index, it comes first
+        if (a.feature_index !== null) return -1;
+        // If only b has index, it comes first
+        if (b.feature_index !== null) return 1;
+        // If neither has index, maintain original order
+        return 0;
       });
 
     const metaCounters = allFiles.find(file => file.slug === "000000000000000000000000")?.frontmatter || {};
@@ -529,9 +546,15 @@ export default ((opts?: any) => {
                     {content.footer.address.details.map((detail:any, index:number) => (
                       <li key={index}>
                         <i className={detail.icon}></i>
-                        <span
-                          dangerouslySetInnerHTML={{ __html: detail.text }}
-                        ></span>
+                        {detail.type === "email" ? (
+                          <span>
+                            <a href={`mailto:${detail.text}`}>{detail.text}</a>
+                          </span>
+                        ) : (
+                          <span
+                            dangerouslySetInnerHTML={{ __html: detail.text }}
+                          ></span>
+                        )}
                       </li>
                     ))}
                   </ul>

@@ -14,8 +14,9 @@ Resource: ['[[DALL·E 2024-10-02 16.45.42 - A minimalist black and white industr
     2024-10-02 16.45.42 - A minimalist black and white industrial-style illustration
     depicting the concept of filtering knowledge. At the center, a]]']
 Group: ['[[66fdf134b7218968a1653ddf|Personal Knowledgebase (Module)]]']
-Group_With: ['[[66fdec1fd89d2220057f4a74|Keyword Lexicon : A Guided Tour]]', '[[66fdef88dc8b1b6a9968157d|Citation
-    Tree (Personal Knowledgebase)]]', '[[66fdf0c32ba0675969968faf|Personal Knowledgebase
+Group_With: ['[[66fdec1fd89d2220057f4a74|Keyword Lexicon : A Guided Tour]]', '[[66fdeebe2d9b7314fd12d2e4|PDF
+    Annotation (Personal Knowledgebase)]]', '[[66fdef88dc8b1b6a9968157d|Citation Tree
+    (Personal Knowledgebase)]]', '[[66fdf0c32ba0675969968faf|Personal Knowledgebase
     (2018)]]']
 Series_Has: ['[[66fdd1b10f011f29b8b1009e|§1 Personal Knowledgebase : Comparing Mendeley,
     Zotero, Evernote & Citavi]]', '[[66fdd3f1f128fd8189664765|§2 Personal Knowledgebase
